@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cognitive Challenge Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+        }
+        #game-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button, .input-field, #start-button, #submit-button {
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Styles for tasks */
+        #reaction-button, #reaction-shape {
+            padding: 20px 40px;
+            font-size: 1.2em;
+        }
+        #reaction-button[disabled], #reaction-shape[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #stroop-test {
+            margin: 20px;
+        }
+        #stroop-word {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        #stroop-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .stroop-option {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: 1px solid #333;
+            border-radius: 5px;
+        }
+        #word-memorization {
+            margin: 20px;
+        }
+        #math-problem {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        #reaction-circle {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            margin: 20px auto;
+            border-radius: 50%;
+        }
+        #shape-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .shape {
+            cursor: pointer;
+            margin: 5px;
+            position: relative;
+            width: 50px;
+            height: 50px;
+        }
+        #reaction-instruction {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>Cognitive Challenge Game</h1>
+    <div id="intro-section">
+        <label for="name">Enter your name:</label>
+        <input type="text" id="name" placeholder="Your name" required><br><br>
+        <label for="difficulty">Select Difficulty:</label>
+        <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+            <option value="expert">Expert</option>
+        </select><br><br>
+        <button id="start-button">Start Game</button>
+    </div>
+
+    <!-- Word Memorization -->
+    <div id="word-memorization" class="hidden">
+        <p>Memorize these words:</p>
+        <p id="word-list"></p>
+        <button id="word-continue-button">Continue</button>
+    </div>
+
+    <!-- Reaction Time Task 1 -->
+    <div id="reaction-time-task-1" class="hidden">
+        <p>Press the button as soon as it appears!</p>
+        <button id="reaction-button-1" disabled>Wait for it...</button>
+        <p id="reaction-time-display-1">Reaction Time: -- ms</p>
+    </div>
+
+    <!-- Math Problems -->
+    <div id="math-problem-task" class="hidden">
+        <p id="math-problem"></p>
+        <input type="number" id="math-answer" class="input-field" placeholder="Answer">
+        <button id="math-submit-button">Submit</button>
+    </div>
+
+    <!-- Reaction Time Task 2 -->
+    <div id="reaction-time-task-2" class="hidden">
+        <p>Press the spacebar as soon as the circle turns green!</p>
+        <div id="reaction-circle"></div>
+        <p id="reaction-time-display-2">Reaction Time: -- ms</p>
+    </div>
+
+    <!-- Reaction Time Task 3 -->
+    <div id="reaction-time-task-3" class="hidden">
+        <p id="reaction-instruction"></p>
+        <div id="shape-container"></div>
+        <p id="reaction-time-display-3">Reaction Time: -- ms</p>
+    </div>
+
+    <!-- Stroop Test -->
+    <div id="stroop-test" class="hidden">
+        <p>Select the <strong>color</strong> of the word displayed, not the word itself.</p>
+        <div id="stroop-word"></div>
+        <div id="stroop-options"></div>
+    </div>
+
+    <!-- Memory Recall at the End -->
+    <div id="memory-recall-end" class="hidden">
+        <p>Please enter the words you memorized at the beginning:</p>
+        <input type="text" id="word-answer-end" class="input-field" placeholder="Enter words separated by spaces">
+        <button id="memory-submit-button-end">Submit</button>
+    </div>
+
+    <!-- Final Score Display -->
+    <div id="final-score" class="hidden">
+        <h2>Game Over!</h2>
+        <p id="final-score-display"></p>
+        <p id="feedback-display"></p>
+        <button id="restart-button">Restart Game</button>
+    </div>
+
+    <p id="score-display">Score: 0</p>
+</div>
+
+<script>
+    let score = 0;
+    let userName, difficulty;
+    let feedback = [];
+    let memorizedWords = [];
+
+    // Start Game
+    document.getElementById("start-button").addEventListener("click", function() {
+        userName = document.getElementById("name").value;
+        difficulty = document.getElementById("difficulty").value;
+        if (!userName) {
+            alert("Please enter your name.");
+            return;
+        }
+        document.getElementById("intro-section").classList.add("hidden");
+        resetGame();
+        startWordMemorization();
+    });
+
+    // Restart Game
+    document.getElementById("restart-button").addEventListener("click", function() {
+        document.getElementById("final-score").classList.add("hidden");
+        document.getElementById("intro-section").classList.remove("hidden");
+    });
+
+    function resetGame() {
+        score = 0;
+        feedback = [];
+        memorizedWords = [];
+        document.getElementById("score-display").innerText = `Score: ${score}`;
+        document.getElementById("reaction-time-display-1").innerText = 'Reaction Time: -- ms';
+        document.getElementById("reaction-time-display-2").innerText = 'Reaction Time: -- ms';
+        document.getElementById("reaction-time-display-3").innerText = 'Reaction Time: -- ms';
+    }
+
+    // Word Memorization
+    function startWordMemorization() {
+        document.getElementById("word-memorization").classList.remove("hidden");
+        let wordCount = difficulty === 'easy' ? 2 : difficulty === 'medium' ? 3 : difficulty === 'hard' ? 5 : 7;
+        let words = ["apple", "banana", "car", "dog", "elephant", "flower", "guitar", "house", "island", "jacket", "kangaroo", "lemon", "mountain", "notebook", "ocean", "piano", "queen", "rainbow", "sunflower", "tiger"];
+        memorizedWords = [];
+        for (let i = 0; i < wordCount; i++) {
+            let word = words.splice(Math.floor(Math.random() * words.length), 1)[0];
+            memorizedWords.push(word);
+        }
+        document.getElementById("word-list").innerText = memorizedWords.join(', ');
+
+        setTimeout(() => {
+            document.getElementById("word-list").innerText = '';
+            document.getElementById("word-continue-button").classList.remove("hidden");
+        }, wordCount * 1000);
+
+        document.getElementById("word-continue-button").onclick = function() {
+            document.getElementById("word-memorization").classList.add("hidden");
+            startReactionTimeTask1();
+        };
+    }
+
+    // Task 1: Reaction Time Task 1
+    function startReactionTimeTask1() {
+        document.getElementById("reaction-time-task-1").classList.remove("hidden");
+        const reactionButton = document.getElementById("reaction-button-1");
+        let startTime;
+        let maxWaitTime = difficulty === 'easy' ? 3000 : difficulty === 'medium' ? 2000 : difficulty === 'hard' ? 1500 : 1000;
+
+        setTimeout(() => {
+            reactionButton.disabled = false;
+            reactionButton.innerText = "Click me!";
+            startTime = new Date().getTime();
+        }, Math.floor(Math.random() * maxWaitTime) + 500);
+
+        reactionButton.onclick = () => {
+            const endTime = new Date().getTime();
+            const reactionTime = endTime - startTime;
+            document.getElementById("reaction-time-display-1").innerText = `Reaction Time: ${reactionTime} ms`;
+            let threshold = difficulty === 'easy' ? 600 : difficulty === 'medium' ? 400 : difficulty === 'hard' ? 300 : 250;
+            if (reactionTime < threshold) {
+                updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+            } else {
+                updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+            }
+            reactionButton.disabled = true;
+            document.getElementById("reaction-time-task-1").classList.add("hidden");
+            startMathProblemTask();
+        };
+    }
+
+    // Task 2: Math Problems
+    function startMathProblemTask() {
+        document.getElementById("math-problem-task").classList.remove("hidden");
+        let problemCount = 0;
+        let maxProblems = 3;
+        generateMathProblem();
+
+        document.getElementById("math-submit-button").onclick = function() {
+            checkMathAnswer();
+        };
+
+        function generateMathProblem() {
+            if (problemCount >= maxProblems) {
+                document.getElementById("math-problem-task").classList.add("hidden");
+                startReactionTimeTask2();
+                return;
+            }
+            problemCount++;
+            let problem = createMathProblem();
+            document.getElementById("math-problem").innerText = `Problem ${problemCount}: ${problem.question}`;
+            document.getElementById("math-answer").value = "";
+            document.getElementById("math-answer").focus();
+            document.getElementById("math-submit-button").disabled = false;
+        }
+
+        function createMathProblem() {
+            let num1, num2, num3, operator1, operator2;
+            let operators = ['+', '-', '*'];
+            operator1 = operators[Math.floor(Math.random() * operators.length)];
+            operator2 = operators[Math.floor(Math.random() * operators.length)];
+            num1 = Math.floor(Math.random() * 50) + 1;
+            num2 = Math.floor(Math.random() * 50) + 1;
+            num3 = Math.floor(Math.random() * 50) + 1;
+
+            if (difficulty === 'easy') {
+                return {
+                    question: `${num1} ${operator1} ${num2} = ?`,
+                    answer: eval(`${num1} ${operator1} ${num2}`)
+                };
+            } else if (difficulty === 'medium') {
+                return {
+                    question: `${num1} ${operator1} ${num2} ${operator2} ${num3} = ?`,
+                    answer: eval(`${num1} ${operator1} ${num2} ${operator2} ${num3}`)
+                };
+            } else if (difficulty === 'hard') {
+                let num4 = Math.floor(Math.random() * 50) + 1;
+                let operator3 = operators[Math.floor(Math.random() * operators.length)];
+                return {
+                    question: `${num1} ${operator1} ${num2} ${operator2} ${num3} ${operator3} ${num4} = ?`,
+                    answer: eval(`${num1} ${operator1} ${num2} ${operator2} ${num3} ${operator3} ${num4}`)
+                };
+            } else {
+                // Expert level
+                let num4 = Math.floor(Math.random() * 50) + 1;
+                let num5 = Math.floor(Math.random() * 50) + 1;
+                let operator3 = operators[Math.floor(Math.random() * operators.length)];
+                let operator4 = operators[Math.floor(Math.random() * operators.length)];
+                return {
+                    question: `(${num1} ${operator1} ${num2}) ${operator2} (${num3} ${operator3} ${num4}) ${operator4} ${num5} = ?`,
+                    answer: eval(`(${num1} ${operator1} ${num2}) ${operator2} (${num3} ${operator3} ${num4}) ${operator4} ${num5}`)
+                };
+            }
+        }
+
+        function checkMathAnswer() {
+            let answer = document.getElementById("math-answer").value.trim();
+            let correctAnswer = eval(document.getElementById("math-problem").innerText.split(':')[1].replace('= ?', ''));
+            if (parseInt(answer) === Math.round(correctAnswer)) {
+                updateScore(10, "Correct math answer!");
+            } else {
+                updateScore(-5, "Incorrect math answer.");
+            }
+            generateMathProblem();
+        }
+    }
+
+    // Task 3: Reaction Time Task 2
+    function startReactionTimeTask2() {
+        document.getElementById("reaction-time-task-2").classList.remove("hidden");
+        const circle = document.getElementById("reaction-circle");
+        circle.style.backgroundColor = 'red';
+        let startTime;
+        let maxWaitTime = difficulty === 'easy' ? 3000 : difficulty === 'medium' ? 2000 : difficulty === 'hard' ? 1500 : 1000;
+
+        setTimeout(() => {
+            circle.style.backgroundColor = 'green';
+            startTime = new Date().getTime();
+        }, Math.floor(Math.random() * maxWaitTime) + 500);
+
+        function keyListener(event) {
+            if (event.code === 'Space' && circle.style.backgroundColor === 'green') {
+                const endTime = new Date().getTime();
+                const reactionTime = endTime - startTime;
+                document.getElementById("reaction-time-display-2").innerText = `Reaction Time: ${reactionTime} ms`;
+                let threshold = difficulty === 'easy' ? 600 : difficulty === 'medium' ? 400 : difficulty === 'hard' ? 300 : 250;
+                if (reactionTime < threshold) {
+                    updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+                } else {
+                    updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+                }
+                document.removeEventListener('keydown', keyListener);
+                document.getElementById("reaction-time-task-2").classList.add("hidden");
+                startReactionTimeTask3();
+            }
+        }
+
+        document.addEventListener('keydown', keyListener);
+    }
+
+    // Task 4: Reaction Time Task 3
+    function startReactionTimeTask3() {
+        document.getElementById("reaction-time-task-3").classList.remove("hidden");
+        const shapeContainer = document.getElementById("shape-container");
+        shapeContainer.innerHTML = '';
+        let startTime;
+        let shapes = ['square', 'circle', 'triangle', 'heart', 'star'];
+        let colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+        let shapeCount = difficulty === 'easy' ? 3 : difficulty === 'medium' ? 4 : difficulty === 'hard' ? 5 : 5;
+        let totalShapes = shapeCount * 2; // Total shapes displayed
+
+        // Select shapes and colors to use
+        shapes = shapes.slice(0, shapeCount);
+        colors = colors.slice(0, shapeCount);
+
+        // Determine target shape and color
+        let targetShape = shapes[Math.floor(Math.random() * shapes.length)];
+        let targetColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Update instruction to specify the target shape and color
+        document.getElementById("reaction-instruction").innerText = `Click on the ${targetColor.toUpperCase()} ${targetShape.toUpperCase()} as quickly as possible!`;
+
+        // Create distractor shapes
+        let distractorShapes = [];
+        for (let i = 0; i < totalShapes - 1; i++) {
+            let shapeDiv = document.createElement('div');
+            shapeDiv.classList.add('shape');
+            let shape, color;
+            do {
+                shape = shapes[Math.floor(Math.random() * shapes.length)];
+                color = colors[Math.floor(Math.random() * colors.length)];
+            } while (shape === targetShape && color === targetColor); // Ensure it's not the target
+
+            styleShapeDiv(shapeDiv, shape, color);
+            shapeDiv.dataset.target = 'false';
+            shapeDiv.onclick = shapeClickHandler;
+            distractorShapes.push(shapeDiv);
+        }
+
+        // Create the target shape
+        let targetShapeDiv = document.createElement('div');
+        targetShapeDiv.classList.add('shape');
+        styleShapeDiv(targetShapeDiv, targetShape, targetColor);
+        targetShapeDiv.dataset.target = 'true';
+        targetShapeDiv.onclick = shapeClickHandler;
+
+        // Combine and shuffle the shapes
+        let allShapes = distractorShapes.concat(targetShapeDiv);
+        allShapes.sort(() => Math.random() - 0.5);
+
+        // Add shapes to the container
+        allShapes.forEach(shapeDiv => {
+            shapeContainer.appendChild(shapeDiv);
+        });
+
+        setTimeout(() => {
+            startTime = new Date().getTime();
+        }, 500);
+
+        function styleShapeDiv(shapeDiv, shape, color) {
+            shapeDiv.style.backgroundColor = color;
+            shapeDiv.innerHTML = ''; // Clear any existing content
+            if (shape === 'square') {
+                // Square is already set by default
+            } else if (shape === 'circle') {
+                shapeDiv.style.borderRadius = '50%';
+            } else if (shape === 'triangle') {
+                shapeDiv.style.width = '0';
+                shapeDiv.style.height = '0';
+                shapeDiv.style.borderLeft = '25px solid transparent';
+                shapeDiv.style.borderRight = '25px solid transparent';
+                shapeDiv.style.borderBottom = `50px solid ${color}`;
+                shapeDiv.style.backgroundColor = 'transparent';
+            } else if (shape === 'heart') {
+                shapeDiv.style.backgroundColor = 'transparent';
+                shapeDiv.style.width = '50px';
+                shapeDiv.style.height = '45px';
+                shapeDiv.style.position = 'relative';
+                shapeDiv.style.transform = 'rotate(-45deg)';
+                let heartBefore = document.createElement('div');
+                heartBefore.style.position = 'absolute';
+                heartBefore.style.top = '0';
+                heartBefore.style.left = '25px';
+                heartBefore.style.width = '25px';
+                heartBefore.style.height = '40px';
+                heartBefore.style.backgroundColor = color;
+                heartBefore.style.borderRadius = '25px 25px 0 0';
+                shapeDiv.appendChild(heartBefore);
+                let heartAfter = document.createElement('div');
+                heartAfter.style.position = 'absolute';
+                heartAfter.style.top = '0';
+                heartAfter.style.left = '0';
+                heartAfter.style.width = '25px';
+                heartAfter.style.height = '40px';
+                heartAfter.style.backgroundColor = color;
+                heartAfter.style.borderRadius = '25px 25px 0 0';
+                shapeDiv.appendChild(heartAfter);
+            } else if (shape === 'star') {
+                shapeDiv.style.backgroundColor = 'transparent';
+                shapeDiv.style.width = '0';
+                shapeDiv.style.height = '0';
+                shapeDiv.style.borderLeft = '25px solid transparent';
+                shapeDiv.style.borderRight = '25px solid transparent';
+                shapeDiv.style.borderBottom = `50px solid ${color}`;
+                shapeDiv.style.position = 'relative';
+                let starBefore = document.createElement('div');
+                starBefore.style.position = 'absolute';
+                starBefore.style.top = '-35px';
+                starBefore.style.left = '-25px';
+                starBefore.style.width = '0';
+                starBefore.style.height = '0';
+                starBefore.style.borderLeft = '25px solid transparent';
+                starBefore.style.borderRight = '25px solid transparent';
+                starBefore.style.borderTop = `50px solid ${color}`;
+                shapeDiv.appendChild(starBefore);
+            }
+        }
+
+        function shapeClickHandler() {
+            if (startTime && this.dataset.target === 'true') {
+                const endTime = new Date().getTime();
+                const reactionTime = endTime - startTime;
+                document.getElementById("reaction-time-display-3").innerText = `Reaction Time: ${reactionTime} ms`;
+                let threshold = difficulty === 'easy' ? 800 : difficulty === 'medium' ? 600 : difficulty === 'hard' ? 500 : 400;
+                if (reactionTime < threshold) {
+                    updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+                } else {
+                    updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+                }
+                document.getElementById("reaction-time-task-3").classList.add("hidden");
+                startStroopTest();
+            } else {
+                updateScore(-5, "Wrong shape clicked.");
+            }
+        }
+    }
+
+    // Task 5: Stroop Test
+    function startStroopTest() {
+        document.getElementById("stroop-test").classList.remove("hidden");
+        const colors = ['Red', 'Green', 'Blue', 'Yellow'];
+        const colorValues = ['red', 'green', 'blue', 'yellow'];
+        let rounds = difficulty === 'easy' ? 5 : difficulty === 'medium' ? 7 : difficulty === 'hard' ? 10 : 15;
+        let currentRound = 0;
+
+        nextRound();
+
+        function nextRound() {
+            if (currentRound >= rounds) {
+                document.getElementById("stroop-test").classList.add("hidden");
+                startMemoryRecallAtEnd();
+                return;
+            }
+            currentRound++;
+            let word = colors[Math.floor(Math.random() * colors.length)];
+            let color = colorValues[Math.floor(Math.random() * colorValues.length)];
+            let stroopWordDiv = document.getElementById("stroop-word");
+            stroopWordDiv.innerText = word;
+            stroopWordDiv.style.color = color;
+
+            let optionsDiv = document.getElementById("stroop-options");
+            optionsDiv.innerHTML = '';
+            colors.forEach((option) => {
+                let button = document.createElement('button');
+                button.classList.add('stroop-option');
+                button.innerText = option;
+                button.onclick = () => checkStroopAnswer(option, color);
+                optionsDiv.appendChild(button);
+            });
+        }
+
+        function checkStroopAnswer(selectedOption, correctColor) {
+            if (selectedOption.toLowerCase() === correctColor) {
+                updateScore(10, "Correct answer in Stroop Test!");
+            } else {
+                updateScore(-5, "Incorrect answer in Stroop Test.");
+            }
+            nextRound();
+        }
+    }
+
+    // Memory Recall at the End
+    function startMemoryRecallAtEnd() {
+        document.getElementById("memory-recall-end").classList.remove("hidden");
+        document.getElementById("word-answer-end").value = '';
+        document.getElementById("word-answer-end").focus();
+
+        document.getElementById("memory-submit-button-end").onclick = function() {
+            let wordsAnswer = document.getElementById("word-answer-end").value.trim().split(' ');
+            let wordsCorrect = compareWords(memorizedWords, wordsAnswer);
+            if (wordsCorrect) {
+                updateScore(10, "Correct word recall!");
+            } else {
+                updateScore(-5, "Incorrect word recall.");
+            }
+            document.getElementById("memory-recall-end").classList.add("hidden");
+            displayFinalScore();
+        };
+    }
+
+    function compareWords(words1, words2) {
+        if (words1.length !== words2.length) return false;
+        for (let word of words1) {
+            if (!words2.includes(word)) return false;
+        }
+        return true;
+    }
+
+    // Score Update Function
+    function updateScore(points, message) {
+        score += points;
+        feedback.push(message);
+        document.getElementById("score-display").innerText = `Score: ${score}`;
+    }
+
+    // Final Score Display
+    function displayFinalScore() {
+        document.getElementById("final-score").classList.remove("hidden");
+        document.getElementById("final-score-display").innerText = `${userName}, your final score is ${score}.`;
+        let feedbackText = "Feedback:\n";
+        feedback.forEach((item, index) => {
+            feedbackText += `${index + 1}. ${item}\n`;
+        });
+        document.getElementById("feedback-display").innerText = feedbackText;
+    }
+</script>
+
+</body>
+</html>
