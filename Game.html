@@ -150,7 +150,7 @@
 
     <!-- Memory Recall at the End -->
     <div id="memory-recall-end" class="hidden">
-        <p>Please enter the words you memorized at the beginning:</p>
+        <p>Please enter the words you memorized at the beginning (do not use commas):</p>
         <input type="text" id="word-answer-end" class="input-field" placeholder="Enter words separated by spaces">
         <button id="memory-submit-button-end">Submit</button>
     </div>
@@ -171,6 +171,7 @@
     let userName, difficulty;
     let feedback = [];
     let memorizedWords = [];
+    let taskScores = {};
 
     // Start Game
     document.getElementById("start-button").addEventListener("click", function() {
@@ -195,6 +196,7 @@
         score = 0;
         feedback = [];
         memorizedWords = [];
+        taskScores = {};
         document.getElementById("score-display").innerText = `Score: ${score}`;
         document.getElementById("reaction-time-display-1").innerText = 'Reaction Time: -- ms';
         document.getElementById("reaction-time-display-2").innerText = 'Reaction Time: -- ms';
@@ -244,8 +246,10 @@
             let threshold = difficulty === 'easy' ? 600 : difficulty === 'medium' ? 400 : difficulty === 'hard' ? 300 : 250;
             if (reactionTime < threshold) {
                 updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+                taskScores['Reaction Time Task 1'] = 10;
             } else {
                 updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+                taskScores['Reaction Time Task 1'] = 0;
             }
             reactionButton.disabled = true;
             document.getElementById("reaction-time-task-1").classList.add("hidden");
@@ -258,6 +262,7 @@
         document.getElementById("math-problem-task").classList.remove("hidden");
         let problemCount = 0;
         let maxProblems = 3;
+        let totalMathScore = 0;
         generateMathProblem();
 
         document.getElementById("math-submit-button").onclick = function() {
@@ -267,6 +272,7 @@
         function generateMathProblem() {
             if (problemCount >= maxProblems) {
                 document.getElementById("math-problem-task").classList.add("hidden");
+                taskScores['Math Problems'] = totalMathScore;
                 startReactionTimeTask2();
                 return;
             }
@@ -279,40 +285,44 @@
         }
 
         function createMathProblem() {
-            let num1, num2, num3, operator1, operator2;
+            let num1, num2, num3, num4, operator1, operator2, operator3;
             let operators = ['+', '-', '*'];
             operator1 = operators[Math.floor(Math.random() * operators.length)];
             operator2 = operators[Math.floor(Math.random() * operators.length)];
-            num1 = Math.floor(Math.random() * 50) + 1;
-            num2 = Math.floor(Math.random() * 50) + 1;
-            num3 = Math.floor(Math.random() * 50) + 1;
+            operator3 = operators[Math.floor(Math.random() * operators.length)];
 
             if (difficulty === 'easy') {
+                num1 = Math.floor(Math.random() * 10) + 1;
+                num2 = Math.floor(Math.random() * 10) + 1;
                 return {
                     question: `${num1} ${operator1} ${num2} = ?`,
                     answer: eval(`${num1} ${operator1} ${num2}`)
                 };
             } else if (difficulty === 'medium') {
+                num1 = Math.floor(Math.random() * 15) + 1;
+                num2 = Math.floor(Math.random() * 15) + 1;
+                num3 = Math.floor(Math.random() * 10) + 1;
                 return {
                     question: `${num1} ${operator1} ${num2} ${operator2} ${num3} = ?`,
                     answer: eval(`${num1} ${operator1} ${num2} ${operator2} ${num3}`)
                 };
             } else if (difficulty === 'hard') {
-                let num4 = Math.floor(Math.random() * 50) + 1;
-                let operator3 = operators[Math.floor(Math.random() * operators.length)];
+                num1 = Math.floor(Math.random() * 20) + 1;
+                num2 = Math.floor(Math.random() * 15) + 1;
+                num3 = Math.floor(Math.random() * 10) + 1;
                 return {
-                    question: `${num1} ${operator1} ${num2} ${operator2} ${num3} ${operator3} ${num4} = ?`,
-                    answer: eval(`${num1} ${operator1} ${num2} ${operator2} ${num3} ${operator3} ${num4}`)
+                    question: `(${num1} ${operator1} ${num2}) ${operator2} ${num3} = ?`,
+                    answer: eval(`(${num1} ${operator1} ${num2}) ${operator2} ${num3}`)
                 };
             } else {
                 // Expert level
-                let num4 = Math.floor(Math.random() * 50) + 1;
-                let num5 = Math.floor(Math.random() * 50) + 1;
-                let operator3 = operators[Math.floor(Math.random() * operators.length)];
-                let operator4 = operators[Math.floor(Math.random() * operators.length)];
+                num1 = Math.floor(Math.random() * 25) + 1;
+                num2 = Math.floor(Math.random() * 20) + 1;
+                num3 = Math.floor(Math.random() * 15) + 1;
+                num4 = Math.floor(Math.random() * 10) + 1;
                 return {
-                    question: `(${num1} ${operator1} ${num2}) ${operator2} (${num3} ${operator3} ${num4}) ${operator4} ${num5} = ?`,
-                    answer: eval(`(${num1} ${operator1} ${num2}) ${operator2} (${num3} ${operator3} ${num4}) ${operator4} ${num5}`)
+                    question: `(${num1} ${operator1} ${num2}) ${operator2} (${num3} ${operator3} ${num4}) = ?`,
+                    answer: eval(`(${num1} ${operator1} ${num2}) ${operator2} (${num3} ${operator3} ${num4})`)
                 };
             }
         }
@@ -322,12 +332,15 @@
             let correctAnswer = eval(document.getElementById("math-problem").innerText.split(':')[1].replace('= ?', ''));
             if (parseInt(answer) === Math.round(correctAnswer)) {
                 updateScore(10, "Correct math answer!");
+                totalMathScore += 10;
             } else {
                 updateScore(-5, "Incorrect math answer.");
+                totalMathScore += -5;
             }
             generateMathProblem();
         }
     }
+
 
     // Task 3: Reaction Time Task 2
     function startReactionTimeTask2() {
@@ -350,8 +363,10 @@
                 let threshold = difficulty === 'easy' ? 600 : difficulty === 'medium' ? 400 : difficulty === 'hard' ? 300 : 250;
                 if (reactionTime < threshold) {
                     updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+                    taskScores['Reaction Time Task 2'] = 10;
                 } else {
                     updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+                    taskScores['Reaction Time Task 2'] = 0;
                 }
                 document.removeEventListener('keydown', keyListener);
                 document.getElementById("reaction-time-task-2").classList.add("hidden");
@@ -362,20 +377,17 @@
         document.addEventListener('keydown', keyListener);
     }
 
-    // Task 4: Reaction Time Task 3
+    // Task 4: Reaction Time Task 3 (Shapes: Triangle, Circle, Square)
     function startReactionTimeTask3() {
         document.getElementById("reaction-time-task-3").classList.remove("hidden");
         const shapeContainer = document.getElementById("shape-container");
         shapeContainer.innerHTML = '';
         let startTime;
-        let shapes = ['square', 'circle', 'triangle', 'heart', 'star'];
+        let shapes = ['square', 'circle', 'triangle'];
         let colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
-        let shapeCount = difficulty === 'easy' ? 3 : difficulty === 'medium' ? 4 : difficulty === 'hard' ? 5 : 5;
+        let shapeCount = shapes.length;
         let totalShapes = shapeCount * 2; // Total shapes displayed
-
-        // Select shapes and colors to use
-        shapes = shapes.slice(0, shapeCount);
-        colors = colors.slice(0, shapeCount);
+        let totalShapeScore = 0;
 
         // Determine target shape and color
         let targetShape = shapes[Math.floor(Math.random() * shapes.length)];
@@ -435,48 +447,6 @@
                 shapeDiv.style.borderRight = '25px solid transparent';
                 shapeDiv.style.borderBottom = `50px solid ${color}`;
                 shapeDiv.style.backgroundColor = 'transparent';
-            } else if (shape === 'heart') {
-                shapeDiv.style.backgroundColor = 'transparent';
-                shapeDiv.style.width = '50px';
-                shapeDiv.style.height = '45px';
-                shapeDiv.style.position = 'relative';
-                shapeDiv.style.transform = 'rotate(-45deg)';
-                let heartBefore = document.createElement('div');
-                heartBefore.style.position = 'absolute';
-                heartBefore.style.top = '0';
-                heartBefore.style.left = '25px';
-                heartBefore.style.width = '25px';
-                heartBefore.style.height = '40px';
-                heartBefore.style.backgroundColor = color;
-                heartBefore.style.borderRadius = '25px 25px 0 0';
-                shapeDiv.appendChild(heartBefore);
-                let heartAfter = document.createElement('div');
-                heartAfter.style.position = 'absolute';
-                heartAfter.style.top = '0';
-                heartAfter.style.left = '0';
-                heartAfter.style.width = '25px';
-                heartAfter.style.height = '40px';
-                heartAfter.style.backgroundColor = color;
-                heartAfter.style.borderRadius = '25px 25px 0 0';
-                shapeDiv.appendChild(heartAfter);
-            } else if (shape === 'star') {
-                shapeDiv.style.backgroundColor = 'transparent';
-                shapeDiv.style.width = '0';
-                shapeDiv.style.height = '0';
-                shapeDiv.style.borderLeft = '25px solid transparent';
-                shapeDiv.style.borderRight = '25px solid transparent';
-                shapeDiv.style.borderBottom = `50px solid ${color}`;
-                shapeDiv.style.position = 'relative';
-                let starBefore = document.createElement('div');
-                starBefore.style.position = 'absolute';
-                starBefore.style.top = '-35px';
-                starBefore.style.left = '-25px';
-                starBefore.style.width = '0';
-                starBefore.style.height = '0';
-                starBefore.style.borderLeft = '25px solid transparent';
-                starBefore.style.borderRight = '25px solid transparent';
-                starBefore.style.borderTop = `50px solid ${color}`;
-                shapeDiv.appendChild(starBefore);
             }
         }
 
@@ -488,13 +458,16 @@
                 let threshold = difficulty === 'easy' ? 800 : difficulty === 'medium' ? 600 : difficulty === 'hard' ? 500 : 400;
                 if (reactionTime < threshold) {
                     updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+                    taskScores['Reaction Time Task 3'] = 10;
                 } else {
                     updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+                    taskScores['Reaction Time Task 3'] = 0;
                 }
                 document.getElementById("reaction-time-task-3").classList.add("hidden");
                 startStroopTest();
             } else {
                 updateScore(-5, "Wrong shape clicked.");
+                taskScores['Reaction Time Task 3'] = -5;
             }
         }
     }
@@ -506,12 +479,14 @@
         const colorValues = ['red', 'green', 'blue', 'yellow'];
         let rounds = difficulty === 'easy' ? 5 : difficulty === 'medium' ? 7 : difficulty === 'hard' ? 10 : 15;
         let currentRound = 0;
+        let totalStroopScore = 0;
 
         nextRound();
 
         function nextRound() {
             if (currentRound >= rounds) {
                 document.getElementById("stroop-test").classList.add("hidden");
+                taskScores['Stroop Test'] = totalStroopScore;
                 startMemoryRecallAtEnd();
                 return;
             }
@@ -536,8 +511,10 @@
         function checkStroopAnswer(selectedOption, correctColor) {
             if (selectedOption.toLowerCase() === correctColor) {
                 updateScore(10, "Correct answer in Stroop Test!");
+                totalStroopScore += 10;
             } else {
                 updateScore(-5, "Incorrect answer in Stroop Test.");
+                totalStroopScore += -5;
             }
             nextRound();
         }
@@ -554,8 +531,10 @@
             let wordsCorrect = compareWords(memorizedWords, wordsAnswer);
             if (wordsCorrect) {
                 updateScore(10, "Correct word recall!");
+                taskScores['Memory Recall'] = 10;
             } else {
                 updateScore(-5, "Incorrect word recall.");
+                taskScores['Memory Recall'] = -5;
             }
             document.getElementById("memory-recall-end").classList.add("hidden");
             displayFinalScore();
@@ -580,8 +559,11 @@
     // Final Score Display
     function displayFinalScore() {
         document.getElementById("final-score").classList.remove("hidden");
-        document.getElementById("final-score-display").innerText = `${userName}, your final score is ${score}.`;
-        let feedbackText = "Feedback:\n";
+        let feedbackText = `${userName}, your final score is ${score}.\n\nScore Breakdown:\n`;
+        for (let task in taskScores) {
+            feedbackText += `${task}: ${taskScores[task]} points\n`;
+        }
+        feedbackText += `\nFeedback:\n`;
         feedback.forEach((item, index) => {
             feedbackText += `${index + 1}. ${item}\n`;
         });
