@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cognitive Challenge Game</title>
+    <title>Welcome to Cognitive Game</title>
     <style>
         body {
             display: flex;
@@ -10,18 +10,22 @@
             align-items: center;
             flex-direction: column;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #fcfafa;
         }
         #game-container {
             text-align: center;
             margin-top: 20px;
         }
         .button, .input-field, #start-button, #submit-button {
-            padding: 12px 20px;
-            margin: 10px;
-            font-size: 1em;
-            border-radius: 5px;
+            padding: 12px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            margin-top: 20px;
         }
         .hidden {
             display: none;
@@ -87,15 +91,16 @@
             font-size: 1.2em;
             margin-bottom: 10px;
         }
+        
     </style>
 </head>
 <body>
 
 <div id="game-container">
     <h1>Cognitive Challenge Game</h1>
+    <p> In this game, you will be tested on several cognitive tasks that aim to measure your mental processing abilities and cognitive load.</p>
+    <p>The tasks will challenge your attention, memory, reaction time, and ability to handle conflicting information.</p>
     <div id="intro-section">
-        <label for="name">Enter your name:</label>
-        <input type="text" id="name" placeholder="Your name" required><br><br>
         <label for="difficulty">Select Difficulty:</label>
         <select id="difficulty">
             <option value="easy">Easy</option>
@@ -104,6 +109,7 @@
             <option value="expert">Expert</option>
         </select><br><br>
         <button id="start-button">Start Game</button>
+       
     </div>
 
     <!-- Word Memorization -->
@@ -168,19 +174,16 @@
 
 <script>
     let score = 0;
-    let userName, difficulty;
+    let difficulty;
     let feedback = [];
     let memorizedWords = [];
     let taskScores = {};
 
     // Start Game
     document.getElementById("start-button").addEventListener("click", function() {
-        userName = document.getElementById("name").value;
+        
         difficulty = document.getElementById("difficulty").value;
-        if (!userName) {
-            alert("Please enter your name.");
-            return;
-        }
+       
         document.getElementById("intro-section").classList.add("hidden");
         resetGame();
         startWordMemorization();
@@ -559,7 +562,7 @@
     // Final Score Display
     function displayFinalScore() {
         document.getElementById("final-score").classList.remove("hidden");
-        let feedbackText = `${userName}, your final score is ${score}.\n\nScore Breakdown:\n`;
+        let feedbackText = `Your final score is ${score}.\n\nScore Breakdown:\n`;
         for (let task in taskScores) {
             feedbackText += `${task}: ${taskScores[task]} points\n`;
         }

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognisense Setup Guide</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://source.unsplash.com/random/1920x1080');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input[type="text"], input[type="email"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            margin-top: 8px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .question-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            margin-top: 10px;
+            padding: 10px;
+            width: 80%;
+            margin-left: 10%;
+        }
+
+        ul {
+            text-align: left;
+            font-size: 16px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+        }
+
+        .next-btn {
+            font-size: 20px;
+            padding: 15px 30px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Page 1: Introduction -->
+    <div id="page1">
+        <h2>Introduction to Biosensors</h2>
+        <p>We will be testing your cognitive load using BioRadio with BioCapture, a system designed to measure and monitor brain activity in real-time. BioRadio is equipped with advanced EEG sensors that track electrical activity in your brain, helping us assess how your brain responds to various tasks.</p>
+        <button class="next-btn" onclick="nextPage('page1', 'page2')">Next</button>
+    </div>
+
+    <!-- Page 2: EEG Setup Instructions -->
+    <div id="page2" style="display:none;">
+        <h2>EEG Setup Instructions</h2>
+        <p>To measure cognitive load, place the EEG pads on your head as follows:</p>
+        <ul>
+            <li><strong>EEG1:</strong> Above the left eyebrow</li>
+            <li><strong>EEG2:</strong> Above the right eyebrow</li>
+            <li><strong>EEG3:</strong> Left side of the temple</li>
+            <li><strong>EEG4:</strong> Right side of the temple</li>
+        </ul>
+        <button class="next-btn" onclick="nextPage('page2', 'page3')">Next</button>
+    </div>
+
+    <!-- Page 3: Registration Form -->
+    <div id="page3" style="display:none;">
+        <h2>Quick Registration</h2>
+        <div class="form-group">
+            <label for="name">Enter Full Name</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="dob">Year of Birth</label>
+            <input type="number" id="dob" min="1900" max="2099" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Enter Email</label>
+            <input type="email" id="email" required>
+        </div>
+        <button class="next-btn" onclick="nextPage('page3', 'page4')">Next</button>
+    </div>
+    
+
+    <!-- Page 4: How the Testing Works -->
+    <div id="page4" style="display:none;">
+        <h2>How the Testing Works</h2>
+        <p>You are now ready to begin the cognitive load testing. Once you click "Start", the BioRadio sensors will begin capturing your brain activity using EEG technology.</p>
+        <p>The sensors will monitor your cognitive load as you perform tasks, providing real-time insights into your mental state.</p>
+        <p>Please ensure that you are in a comfortable position and ready to begin.</p>
+        <button onclick="nextPage('page4', 'page5')">Start</button>
+    </div>
+
+    <!-- Page 5: Cognitive Load Questions -->
+    <div id="page5" style="display:none;">
+        <h2>Cognitive Load Assessment</h2>
+        <div id="question-container" class="question-container">
+            <p id="question">What did you have for breakfast today?</p>
+            <input type="text" id="answer" required>
+        </div>
+        <button onclick="nextQuestion()">Continue</button>
+    </div>
+
+    <!-- Page 6: Start Game -->
+    <div id="page6" style="display:none;">
+        <h2>Moving to level 2</h2>
+        <p>Click below to begin the 2nd part.</p>
+        <button onclick="window.location.href='Game.html'">Start Cognisense Game</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        "What did you have for breakfast today?",
+        "Did you sleep well last night? How many hours?",
+        "What did you eat for dinner last night?",
+        "How did you feel when you woke up this morning?"
+    ];
+    
+    let currentQuestion = 0;
+
+    function nextPage(current, next) {
+        document.getElementById(current).style.display = "none";
+        document.getElementById(next).style.display = "block";
+    }
+
+    function nextQuestion() {
+        const answer = document.getElementById("answer").value;
+        if (answer.trim() === "") {
+            alert("Please answer the question before proceeding.");
+            return;
+        }
+
+        currentQuestion++;
+        document.getElementById("answer").value = ""; 
+
+        if (currentQuestion < questions.length) {
+            document.getElementById("question").innerText = questions[currentQuestion];
+        } else {
+            alert("Thank you for completing the assessment!");
+            nextPage('page5', 'page6');
+        }
+    }
+</script>
+
+</body>
+</html>
