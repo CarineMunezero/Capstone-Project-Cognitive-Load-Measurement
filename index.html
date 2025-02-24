@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cognisense Setup Guide</title>
+
+  <!-- Global Styles for All Pages -->
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #0d1b2a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background-image: url('https://source.unsplash.com/1920x1080/?technology,brain');
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      overflow-y: auto; /* Changed to allow scrolling */
+    }
+
+    /* Header styles */
+    #header {
+      background: #1b263b;
+      width: 100%;
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    #header #welcome-text {
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+    #header nav a {
+      text-decoration: none;
+      color: #f0a500;
+      margin-left: 15px;
+      font-weight: 600;
+    }
+    #header nav a:hover {
+      color: #cf8500;
+    }
+    
+    .container {
+      background-color: rgba(13, 27, 42, 0.9);
+      border-radius: 15px;
+      padding: 80px 50px 40px; /* Added top padding to account for header */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      max-width: 700px;
+      width: 90%;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+      position: relative;
+      z-index: 1;
+      margin-top: 70px; /* extra margin so content isn't hidden behind header */
+      margin-bottom: 40px;
+    }
+
+    /* Hide all "pages" by default; we show them via JS */
+    .page {
+      display: none;
+    }
+
+    h2 {
+      font-size: 32px;
+      font-weight: 600;
+      color: #f0a500;
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #d3d3d3;
+    }
+    .form-group {
+      margin-bottom: 25px;
+      text-align: left;
+    }
+    .form-group label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f0a500;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #f0a500;
+      font-size: 16px;
+      margin-top: 8px;
+      background-color: #1b263b;
+      color: #fff;
+      transition: all 0.3s ease-in-out;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="number"]:focus,
+    input[type="password"]:focus {
+      border-color: #e0e1dd;
+      outline: none;
+    }
+    button {
+      padding: 15px 35px;
+      font-size: 18px;
+      color: #0d1b2a;
+      background-color: #f0a500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+      margin-top: 30px;
+      font-weight: 600;
+    }
+    button:hover {
+      background-color: #cf8500;
+    }
+    .question-container {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .question-container input[type="text"] {
+      margin-top: 15px;
+      padding: 12px;
+      width: 100%;
+      border: 1px solid #f0a500;
+      background-color: #1b263b;
+      color: #fff;
+    }
+    ul {
+      text-align: left;
+      font-size: 18px;
+      color: #d3d3d3;
+      margin-top: 15px;
+      line-height: 1.6;
+    }
+    ul li {
+      margin-bottom: 12px;
+    }
+    .next-btn {
+      font-size: 20px;
+      padding: 15px 35px;
+      color: #0d1b2a;
+      background-color: #f0a500;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 25px;
+      font-weight: 600;
+      transition: background-color 0.3s ease-in-out;
+    }
+    .next-btn:hover {
+      background-color: #cf8500;
+    }
+    img {
+      margin-top: 20px;
+      max-width: 100%;
+      border-radius: 10px;
+      border: 2px solid #f0a500;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =============================== 
+       Styles for the Game (PAGE 8)
+       =============================== */
+    #page8.game-container {
+      max-width: 700px;
+      padding: 40px 50px;
+      border-radius: 15px;
+      background-color: rgba(13, 27, 42, 0.9);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease-in-out;
+      margin-bottom: 60px;
+      position: relative;
+      z-index: 1;
+      display: none; /* start hidden */
+    }
+    #page8 h1, #page8 h2 {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #f0a500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    #page8 .task-container {
+      margin-top: 30px;
+      text-align: center;
+    }
+    #page8 button {
+      margin-top: 20px;
+    }
+    #reaction-button-1 {
+      background-color: #4caf50;
+      font-size: 1.2em;
+      border-radius: 50px;
+      padding: 15px 30px;
+      margin-top: 20px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    #reaction-button-1:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+    #reaction-button-1:hover:not(:disabled) {
+      background-color: #43a047;
+      transform: translateY(-3px);
+    }
+    #reaction-circle {
+      width: 150px;
+      height: 150px;
+      background-color: red;
+      margin: 20px auto;
+      border-radius: 50%;
+      transition: background-color 0.3s;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+    }
+    .categories {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #f0a500;
+      display: flex;
+      justify-content: space-around;
+      margin-top: 30px;
+    }
+    .category-left, .category-right {
+      width: 45%;
+      text-align: center;
+    }
+    .category-key {
+      font-size: 18px;
+      color: #d3d3d3;
+      margin-top: 10px;
+    }
+    #feedback {
+      font-size: 20px;
+      margin-top: 15px;
+    }
+    #timer {
+      font-size: 20px;
+      margin-top: 15px;
+      color: #f0a500;
+    }
+    #score-display {
+      font-size: 1.5em;
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: #ffeb3b;
+    }
+    #feedback-display {
+      white-space: pre-wrap;
+      text-align: left;
+      margin-top: 20px;
+      font-size: 1em;
+      line-height: 1.5em;
+      color: #ffffff;
+    }
+    #word-continue-button.hidden,
+    #reaction-time-task-1.hidden,
+    #reaction-time-task-2.hidden,
+    #math-problem-task.hidden,
+    #categorization-game.hidden,
+    .game-container.hidden,
+    #memory-recall-end.hidden,
+    #final-score.hidden,
+    #word-memorization.hidden,
+    #intro-section.hidden {
+      display: none;
+    }
+  </style>
+
+  <!-- Firebase SDK (ES Module) - UPDATED TO 11.3.0 -->
+  <script type="module">
+    /*****************************************
+     * 1) FIREBASE INITIALIZATION
+     *****************************************/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-analytics.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      getDocs, 
+      query, 
+      where, 
+      orderBy,
+      limit,
+      Timestamp 
+    } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXupfZHBYrbEPGy-SOH5tqlZjexbBNurM",
+      authDomain: "cognisense-949b6.firebaseapp.com",
+      projectId: "cognisense-949b6",
+      storageBucket: "cognisense-949b6.firebasestorage.app",
+      messagingSenderId: "964761577902",
+      appId: "1:964761577902:web:49f62d2644cf03ae6e003f",
+      measurementId: "G-QFR9P466JC"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    /*****************************************
+     * 2) GLOBAL VARIABLES
+     *****************************************/
+    // We'll store the logged-in username here after successful login
+    window.loggedInUser = null; 
+    window.submitRegistration = submitRegistration;
+    window.submitLogin = submitLogin;
+
+
+    /*****************************************
+     * 3) HELPER FUNCTIONS (Registration, Login, Profile)
+     *****************************************/
+    // Registration
+    async function submitRegistration() {
+      const name = document.getElementById('name').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const dob = document.getElementById('dob').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const passwordReg = document.getElementById('passwordReg').value.trim();
+      const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+      if (!name || !username || !dob || !email || !passwordReg || !confirmPassword) {
+        alert("Please fill out all fields.");
+        return;
+      }
+      if (passwordReg !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      try {
+        // Save user data to Firestore (in "users" collection)
+        await addDoc(collection(db, "users"), {
+          name,       // full name
+          username,   // username
+          dob,        // year of birth
+          email,      // email
+          password: passwordReg,
+          createdAt: new Date()
+        });
+        alert("Registration successful!");
+        // After registration, update header welcome text
+        window.loggedInUser = username;
+        updateHeader();
+        showPage("page4"); // Go to Login page
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Registration failed. See console for details.");
+      }
+    }
+
+    // Login
+    async function submitLogin() {
+      const username = document.getElementById('usernameLogin').value.trim();
+      const passwordLogin = document.getElementById('passwordLogin').value.trim();
+
+      if (!username || !passwordLogin) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      try {
+        const usersRef = collection(db, "users");
+        const q = query(
+          usersRef,
+          where("username", "==", username),
+          where("password", "==", passwordLogin)
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          window.loggedInUser = username;
+          alert("Login successful!");
+          updateHeader();
+          showPage("page5");
+        } else {
+          alert("Login failed: Invalid credentials.");
+        }
+      } catch (error) {
+        console.error("Error logging in: ", error);
+        alert("Login error. See console for details.");
+      }
+    }
+
+    // Update Header Welcome Text
+    function updateHeader() {
+      const welcomeEl = document.getElementById('welcome-text');
+      welcomeEl.innerText = "Welcome, " + (window.loggedInUser || "Guest");
+    }
+
+    // Logout function
+    function logout() {
+      window.loggedInUser = null;
+      updateHeader();
+      showPage("page1");
+    }
+
+    // Load Profile Data (latest score)
+    async function loadProfile() {
+      if (!window.loggedInUser) return;
+      try {
+        const scoresRef = collection(db, "scores");
+        const q = query(scoresRef, where("user", "==", window.loggedInUser), orderBy("timestamp", "desc"), limit(1));
+        const querySnapshot = await getDocs(q);
+        let scoreText = "No score available.";
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          scoreText = data.score;
+        });
+        document.getElementById("profile-info").innerHTML = "<p><strong>Username:</strong> " + window.loggedInUser + "</p><p><strong>Latest Score:</strong> " + scoreText + "</p>";
+      } catch (error) {
+        console.error("Error loading profile:", error);
+      }
+    }
+
+    /*****************************************
+     * 4) PAGE NAVIGATION
+     *****************************************/
+    const pages = ["page1","page2","page3","page4","page5","page6","page7","page8", "profile"];
+    function showPage(pageId) {
+      pages.forEach(id => {
+        const pageEl = document.getElementById(id);
+        if (pageEl) {
+          pageEl.style.display = (id === pageId) ? "block" : "none";
+        }
+      });
+      // If user tries to start the game (page8), call initGame if needed
+      if (pageId === "page8") {
+        resetGame(); // from the game code
+        document.getElementById("intro-section").classList.remove("hidden");
+      }
+      // If profile page, load profile info
+      if(pageId === "profile") {
+        loadProfile();
+      }
+    }
+
+    // ***** MAKE showPage GLOBAL *****
+    window.showPage = showPage;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Show page1 on load
+      showPage("page1");
+      // Attach event listeners for header links
+      document.getElementById("profile-link").addEventListener("click", () => showPage("profile"));
+      document.getElementById("logout-link").addEventListener("click", logout);
+    });
+
+    /*****************************************
+     * 5) COGNITIVE LOAD QUESTIONS
+     *****************************************/
+    const questions = [
+      { question: "Did you have breakfast today?", type: "radio", options: ["Yes", "No"] },
+      { question: "Did you sleep well last night?", type: "radio", options: ["Yes", "No"] },
+      { question: "How many hours of sleep did you have?", type: "radio", options: ["Less than 5 hours","5-7 hours","More than 7 hours"]},
+      { question: "Did you eat dinner last night?", type: "radio", options: ["Yes", "No"]},
+      { question: "How did you feel when you woke up this morning?", type: "radio", options: ["Sleepy","Awake","Energetic","Exhausted"]},
+      { question: "Did you listen to music today?", type: "radio", options: ["Yes", "No"]},
+      { question: "Did you exercise today?", type: "radio", options: ["Yes", "No"]},
+      { question: "What's the weather like where you are?", type: "radio", options: ["Sunny","Cloudy","Rainy","Snowy"] }
+    ];
+    let currentQuestion = 0;
+    let responses = {};
+
+    function displayQuestion() {
+      const questionObj = questions[currentQuestion];
+      document.getElementById("question").innerText = questionObj.question;
+      document.getElementById("question-number").value = currentQuestion + 1;
+      document.getElementById("question-text").value = questionObj.question;
+
+      const answerContainer = document.getElementById("answer-container");
+      answerContainer.innerHTML = "";
+
+      if (questionObj.type === "radio") {
+        questionObj.options.forEach((option, index) => {
+          const label = document.createElement("label");
+          label.style.display = "block";
+          label.style.marginBottom = "10px";
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "answer";
+          input.value = option;
+          if (index === 0) input.checked = true;
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(" " + option));
+          answerContainer.appendChild(label);
+        });
+      }
+    }
+
+
+    async function nextQuestion() {
+      const selectedOption = document.querySelector('input[name="answer"]:checked');
+      
+      if (!selectedOption) {
+        alert("Please select an answer.");
+        return;
+      }
+
+      responses[`question${currentQuestion + 1}`] = selectedOption.value;
+      currentQuestion++;
+
+      if (currentQuestion < questions.length) {
+        displayQuestion();
+      } else {
+        try {
+          await addDoc(collection(db, "responses"), {
+            username: window.loggedInUser || "anonymous",
+            ...responses,
+            timestamp: Timestamp.now()
+          });
+          alert("Responses saved successfully!");
+          showPage("page7"); 
+        } catch (error) {
+          console.error("Error saving responses:", error);
+          alert("Failed to save responses. Check console for details.");
+        }
+      }
+    }
+    window.nextQuestion = nextQuestion;
+
+
+    /*****************************************
+     * 6) GAME CODE (PAGE 8)
+     *****************************************/
+    let score = 0;
+    let feedback = [];
+    let memorizedWords = [];
+    let taskScores = {};
+    let selectedCategories = [];
+    let gameItems = [];
+    let currentItemIndex = 0;
+    let gameActive = false;
+    let timer;
+    let timeLimit = 60;
+    let timeLeft;
+    let level = 1;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const startBtn = document.getElementById('start-button');
+      if (startBtn) {
+        startBtn.addEventListener("click", () => {
+          document.getElementById("intro-section").classList.add("hidden");
+          resetGame();
+          startWordMemorization();
+        });
+      }
+      const restartBtn = document.getElementById('restart-button');
+      if (restartBtn) {
+        restartBtn.addEventListener("click", function() {
+          document.getElementById("final-score").classList.add("hidden");
+          document.getElementById("intro-section").classList.remove("hidden");
+        });
+      }
+    });
+
+    function resetGame() {
+      score = 0;
+      feedback = [];
+      memorizedWords = [];
+      taskScores = {};
+      level = 1;
+      document.getElementById("score-display").innerText = "Score: 0";
+
+      if (document.getElementById("reaction-time-display-1"))
+        document.getElementById("reaction-time-display-1").innerText = 'Reaction Time: -- ms';
+      if (document.getElementById("reaction-time-display-2"))
+        document.getElementById("reaction-time-display-2").innerText = 'Reaction Time: -- ms';
+    }
+
+    function startWordMemorization() {
+      const wordMemorizationSection = document.getElementById('word-memorization');
+      wordMemorizationSection.classList.remove("hidden");
+      let wordCount = 5;
+      let words = [
+        "apple","banana","car","dog","elephant","flower","guitar","house","island","jacket",
+        "kangaroo","lemon","mountain","notebook","ocean","piano","queen","rainbow","sunflower","tiger"
+      ];
+      memorizedWords = [];
+      for (let i = 0; i < wordCount; i++) {
+        let word = words.splice(Math.floor(Math.random() * words.length), 1)[0];
+        memorizedWords.push(word);
+      }
+      document.getElementById("word-list").innerText = memorizedWords.join(', ');
+
+      setTimeout(() => {
+        document.getElementById("word-list").innerText = '';
+        document.getElementById("word-continue-button").classList.remove("hidden");
+      }, wordCount * 1000);
+
+      document.getElementById("word-continue-button").onclick = function() {
+        wordMemorizationSection.classList.add("hidden");
+        startReactionTimeTask1();
+      };
+    }
+
+    function startReactionTimeTask1() {
+      const reactionTimeTask1 = document.getElementById('reaction-time-task-1');
+      reactionTimeTask1.classList.remove("hidden");
+      const reactionButton = document.getElementById("reaction-button-1");
+      let startTime;
+      let maxWaitTime = 2000;
+
+      setTimeout(() => {
+        reactionButton.disabled = false;
+        reactionButton.innerText = "Click me!";
+        startTime = new Date().getTime();
+      }, Math.floor(Math.random() * maxWaitTime) + 500);
+
+      reactionButton.onclick = () => {
+        const endTime = new Date().getTime();
+        const reactionTime = endTime - startTime;
+        document.getElementById("reaction-time-display-1").innerText = `Reaction Time: ${reactionTime} ms`;
+        let threshold = 500;
+        if (reactionTime < threshold) {
+          updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+          taskScores['Reaction Time Task 1'] = 10;
+        } else {
+          updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+          taskScores['Reaction Time Task 1'] = 0;
+        }
+        reactionButton.disabled = true;
+        reactionTimeTask1.classList.add("hidden");
+        startMathProblemTask();
+      };
+    }
+
+    function startMathProblemTask() {
+      const mathProblemTask = document.getElementById('math-problem-task');
+      mathProblemTask.classList.remove("hidden");
+      let problemCount = 0;
+      let maxProblems = 3;
+      let totalMathScore = 0;
+
+      generateMathProblem();
+      document.getElementById("math-submit-button").onclick = function() {
+        checkMathAnswer();
+      };
+
+      function generateMathProblem() {
+        if (problemCount >= maxProblems) {
+          mathProblemTask.classList.add("hidden");
+          taskScores['Math Problems'] = totalMathScore;
+          startReactionTimeTask2();
+          return;
+        }
+        problemCount++;
+        let problem = createMathProblem();
+        document.getElementById("math-problem").innerText = `Problem ${problemCount}: ${problem.question}`;
+        document.getElementById("math-answer").value = "";
+        document.getElementById("math-answer").focus();
+      }
+
+      function createMathProblem() {
+        let num1 = Math.floor(Math.random() * 20) + 1;
+        let num2 = Math.floor(Math.random() * 15) + 1;
+        let ops = ['+','-','*'];
+        let operator = ops[Math.floor(Math.random() * 3)];
+        return {
+          question: `${num1} ${operator} ${num2} = ?`,
+          answer: eval(`${num1} ${operator} ${num2}`)
+        };
+      }
+
+      function checkMathAnswer() {
+        let answer = document.getElementById("math-answer").value.trim();
+        let questionText = document.getElementById("math-problem").innerText.split(':')[1];
+        let correctAnswer = eval(questionText.replace('= ?', ''));
+        if (parseInt(answer) === Math.round(correctAnswer)) {
+          updateScore(10, "Correct math answer!");
+          totalMathScore += 10;
+        } else {
+          updateScore(-5, "Incorrect math answer.");
+          totalMathScore -= 5;
+        }
+        generateMathProblem();
+      }
+    }
+
+    function startReactionTimeTask2() {
+      const reactionTimeTask2 = document.getElementById('reaction-time-task-2');
+      reactionTimeTask2.classList.remove("hidden");
+      const circle = document.getElementById("reaction-circle");
+      circle.style.backgroundColor = 'red';
+      circle.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.7)';
+      let startTime;
+      let maxWaitTime = 2000;
+
+      setTimeout(() => {
+        circle.style.backgroundColor = 'green';
+        circle.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.7)';
+        startTime = new Date().getTime();
+      }, Math.floor(Math.random() * maxWaitTime) + 500);
+
+      function keyListener(event) {
+        if (event.code === 'Space' && circle.style.backgroundColor === 'green') {
+          const endTime = new Date().getTime();
+          const reactionTime = endTime - startTime;
+          document.getElementById("reaction-time-display-2").innerText = `Reaction Time: ${reactionTime} ms`;
+          let threshold = 500;
+          if (reactionTime < threshold) {
+            updateScore(10, `Excellent reaction time! (${reactionTime} ms)`);
+            taskScores['Reaction Time Task 2'] = 10;
+          } else {
+            updateScore(0, `Reaction time could be faster. (${reactionTime} ms)`);
+            taskScores['Reaction Time Task 2'] = 0;
+          }
+          document.removeEventListener('keydown', keyListener);
+          reactionTimeTask2.classList.add("hidden");
+          startCategorizationIntro();
+        }
+      }
+
+      document.addEventListener('keydown', keyListener);
+    }
+
+    function startCategorizationIntro() {
+      const categorizationGameIntro = document.getElementById('categorization-game');
+      categorizationGameIntro.classList.remove("hidden");
+
+      document.getElementById("startCategorizationBtn").onclick = function() {
+        categorizationGameIntro.classList.add("hidden");
+        startCategorizationGame();
+      };
+    }
+
+    let currentItem;
+    function startCategorizationGame() {
+      const gameContainer = document.querySelector('.game-container');
+      if (!gameContainer) return;
+      gameContainer.classList.remove('hidden');
+      document.getElementById('level-number').textContent = level;
+      setupLevel(level);
+      gameActive = true;
+      timeLeft = timeLimit;
+      document.getElementById('timer').textContent = `Time Left: ${timeLeft}s`;
+      startTimer();
+      displayItem();
+      document.addEventListener('keydown', handleKeyPress);
+    }
+
+    function setupLevel(level) {
+      let allItems = [
+        { type: 'word', text: 'Apple', category: 'Fruit' },
+        { type: 'word', text: 'Banana', category: 'Fruit' },
+        { type: 'word', text: 'Orange', category: 'Fruit' },
+        { type: 'word', text: 'Grapes', category: 'Fruit' },
+        { type: 'word', text: 'Car', category: 'Vehicle' },
+        { type: 'word', text: 'Bike', category: 'Vehicle' },
+        { type: 'word', text: 'Bus', category: 'Vehicle' },
+        { type: 'word', text: 'Truck', category: 'Vehicle' },
+        { type: 'image', src: 'Images/fruits.jpg', category: 'Fruit' },
+        { type: 'image', src: 'Images/Vehicle.jpeg', category: 'Vehicle' },
+        { type: 'image', src: 'Images/Vehicle2.jpeg', category: 'Vehicle' },
+        { type: 'image', src: 'Images/fruits2.jpeg', category: 'Fruit' },
+        { type: 'word', text: 'Dog', category: 'Animal' },
+        { type: 'word', text: 'Cat', category: 'Animal' },
+        { type: 'word', text: 'Lion', category: 'Animal' },
+        { type: 'word', text: 'Elephant', category: 'Animal' },
+        { type: 'word', text: 'Monkey', category: 'Animal' },
+        { type: 'word', text: 'Zebra', category: 'Animal' },
+        { type: 'word', text: 'Guitar', category: 'Instrument' },
+        { type: 'word', text: 'Piano', category: 'Instrument' },
+        { type: 'word', text: 'Violin', category: 'Instrument' },
+        { type: 'word', text: 'Flute', category: 'Instrument' },
+        { type: 'word', text: 'Saxophone', category: 'Instrument' },
+        { type: 'word', text: 'Harp', category: 'Instrument' },
+        { type: 'image', src: 'Images/Animal.jpeg', category: 'Animal' },
+        { type: 'image', src: 'Images/Animal2.jpeg', category: 'Animal' },
+        { type: 'image', src: 'Images/Animal3.jpeg', category: 'Animal' },
+        { type: 'image', src: 'Images/Instrument.jpeg', category: 'Instrument' },
+        { type: 'image', src: 'Images/Instrument2.jpeg', category: 'Instrument' },
+        { type: 'image', src: 'Images/Instrument3.jpeg', category: 'Instrument' },
+        { type: 'word', text: 'Doctor', category: 'Profession' },
+        { type: 'word', text: 'Engineer', category: 'Profession' },
+        { type: 'word', text: 'Teacher', category: 'Profession' },
+        { type: 'word', text: 'Nurse', category: 'Profession' },
+        { type: 'word', text: 'Lawyer', category: 'Profession' },
+        { type: 'word', text: 'Chef', category: 'Profession' },
+        { type: 'image', src: 'Images/Profession.jpg', category: 'Profession' },
+        { type: 'image', src: 'Images/Profession2.jpeg', category: 'Profession' },
+        { type: 'word', text: 'Hammer', category: 'Tool' },
+        { type: 'word', text: 'Wrench', category: 'Tool' },
+        { type: 'word', text: 'Screwdriver', category: 'Tool' },
+        { type: 'word', text: 'Pliers', category: 'Tool' },
+        { type: 'image', src: 'Images/Tool.jpg', category: 'Tool' }
+      ];
+
+      let levelInstructions = {
+        1: 'Level 1: Categorize items into Fruit (E) and Vehicle (I).',
+        2: 'Level 2: Categorize items into Animal (E) and Instrument (I).',
+        3: 'Level 3: E = Instrument & Profession, I = Animal & Fruit.'
+      };
+      document.getElementById('level-instructions').textContent = levelInstructions[level];
+
+      if (level === 1) {
+        selectedCategories = [['Fruit'],['Vehicle']];
+        gameItems = allItems.filter(item => selectedCategories[0].includes(item.category) || selectedCategories[1].includes(item.category));
+      } else if (level === 2) {
+        selectedCategories = [['Animal'],['Instrument']];
+        gameItems = allItems.filter(item => selectedCategories[0].includes(item.category) || selectedCategories[1].includes(item.category));
+      } else if (level === 3) {
+        selectedCategories = [['Instrument','Profession'], ['Animal','Fruit']];
+        let categoriesLevel3 = ['Instrument','Profession','Animal','Fruit'];
+        gameItems = allItems.filter(item => categoriesLevel3.includes(item.category));
+      }
+      document.getElementById('left-category').textContent = selectedCategories[0].join(' & ');
+      document.getElementById('right-category').textContent = selectedCategories[1].join(' & ');
+
+      shuffleArray(gameItems);
+      currentItemIndex = 0;
+    }
+
+    function displayItem() {
+      const itemToSort = document.getElementById('itemToSort');
+      if (currentItemIndex < gameItems.length) {
+        currentItem = gameItems[currentItemIndex];
+        itemToSort.innerHTML = '';
+        if (currentItem.type === 'word') {
+          let word = document.createElement('p');
+          word.textContent = currentItem.text;
+          word.style.fontSize = '48px';
+          word.style.fontWeight = 'bold';
+          word.style.color = '#f0a500';
+          itemToSort.appendChild(word);
+        } else if (currentItem.type === 'image') {
+          let img = document.createElement('img');
+          img.src = currentItem.src;
+          img.alt = 'Item to Sort';
+          img.style.maxWidth = '400px';
+          img.style.borderRadius = '10px';
+          img.style.border = '2px solid #f0a500';
+          itemToSort.appendChild(img);
+        }
+      } else {
+        endCategorizationLevel();
+      }
+    }
+
+    function handleKeyPress(event) {
+      if (!gameActive) return;
+      let key = event.key.toLowerCase();
+      if (key === 'e' || key === 'i') {
+        checkAnswer(key);
+      }
+    }
+
+    function checkAnswer(key) {
+      let correctCategory = currentItem.category;
+      let selectedCategoryArray = (key === 'e') ? selectedCategories[0] : selectedCategories[1];
+      const feedbackEl = document.getElementById('feedback');
+
+      if (selectedCategoryArray.includes(correctCategory)) {
+        feedbackEl.textContent = 'Correct!';
+        feedbackEl.style.color = '#00ff00';
+        updateScore(2, `Correctly categorized ${currentItem.text||'image'} as ${correctCategory}.`);
+      } else {
+        feedbackEl.textContent = 'Wrong!';
+        feedbackEl.style.color = '#ff0000';
+        updateScore(-1, `Incorrectly categorized ${currentItem.text||'image'} (belongs to ${correctCategory}).`);
+      }
+
+      currentItemIndex++;
+      setTimeout(() => {
+        feedbackEl.textContent = '';
+        displayItem();
+      }, 500);
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `Time Left: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          endCategorizationLevel();
+        }
+      }, 1000);
+    }
+
+    function endCategorizationLevel() {
+      gameActive = false;
+      document.removeEventListener('keydown', handleKeyPress);
+      clearInterval(timer);
+
+      if (level < 3) {
+        level++;
+        alert(`Level ${level-1} Complete! Get ready for Level ${level}.`);
+        startCategorizationGame();
+      } else {
+        document.querySelector('.game-container').classList.add('hidden');
+        taskScores['Categorization Game'] = score;
+        startMemoryRecallAtEnd();
+      }
+    }
+
+    function startMemoryRecallAtEnd() {
+      const memoryRecallEnd = document.getElementById('memory-recall-end');
+      memoryRecallEnd.classList.remove("hidden");
+      document.getElementById("word-answer-end").value = '';
+      document.getElementById("word-answer-end").focus();
+
+      document.getElementById("memory-submit-button-end").onclick = function() {
+        let wordsAnswer = document.getElementById("word-answer-end").value.trim().split(' ');
+        let wordsCorrect = compareWords(memorizedWords, wordsAnswer);
+        if (wordsCorrect) {
+          updateScore(10, "Correct word recall!");
+          taskScores['Memory Recall'] = 10;
+        } else {
+          updateScore(-5, "Incorrect word recall.");
+          taskScores['Memory Recall'] = -5;
+        }
+        memoryRecallEnd.classList.add("hidden");
+        displayFinalScore();
+      };
+    }
+
+    function compareWords(words1, words2) {
+      let correctCount = 0;
+      for (let word of words1) {
+        if (words2.includes(word)) correctCount++;
+      }
+      return (correctCount >= words1.length / 2);
+    }
+
+    function updateScore(points, message) {
+      score += points;
+      feedback.push(message);
+      document.getElementById("score-display").innerText = `Score: ${score}`;
+    }
+
+    function displayFinalScore() {
+      const finalScoreSection = document.getElementById('final-score');
+      finalScoreSection.classList.remove("hidden");
+
+      let breakdownList = '';
+      for (let task in taskScores) {
+        breakdownList += `<li><strong>${task}:</strong> ${taskScores[task]} points</li>`;
+      }
+
+      let feedbackList = '';
+      feedback.forEach((item) => {
+        feedbackList += `<li>${item}</li>`;
+      });
+
+      const finalScoreHTML = `
+        <h2>Your final score is ${score}.</h2>
+        <h3>Score Breakdown:</h3>
+        <ul>${breakdownList}</ul>
+        <h3>Feedback:</h3>
+        <ol>${feedbackList}</ol>
+      `;
+      document.getElementById("final-score-display").innerHTML = `<h2>Your final score is ${score}.</h2>`;
+      document.getElementById("feedback-display").innerHTML = finalScoreHTML;
+
+      // Save final score to Firestore
+      saveScoreToFirestore(score);
+    }
+
+    async function saveScoreToFirestore(finalScore) {
+      try {
+        await addDoc(collection(db, "scores"), {
+          user: window.loggedInUser || "anonymous",
+          score: finalScore,
+          timestamp: new Date()
+        });
+        console.log("Score saved successfully to Firestore.");
+      } catch (error) {
+        console.error("Error saving score:", error);
+      }
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- ADDED HEADER (fixed) -->
+  <div id="header">
+    <span id="welcome-text">Welcome, Guest</span>
+    <nav>
+      <a href="#" id="profile-link">Profile</a>
+      <a href="#" id="logout-link">Logout</a>
+    </nav>
+  </div>
+
+  <!-- PAGES 1-7 Container -->
+  <div class="container">
+    <!-- PAGE 1 -->
+    <div id="page1" class="page">
+      <h2>Introduction to Biosensors</h2>
+      <p>
+        We will be testing your cognitive load using BioRadio with BioCapture, a system designed 
+        to measure and monitor brain activity in real-time. BioRadio is equipped with advanced EEG 
+        sensors that track electrical activity in your brain, helping us assess how your brain responds 
+        to various tasks.
+      </p>
+      <button class="next-btn" onclick="showPage('page2')">Next</button>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div id="page2" class="page">
+      <h2>EEG Setup Instructions</h2>
+      <p>To measure cognitive load, place the EEG pads on your head as follows:</p>
+      <ul>
+        <li><strong>FP1:</strong> Top left of frontal lobe</li>
+        <li><strong>FP2:</strong> Top right of frontal lobe</li>
+        <li><strong>O1:</strong> Bottom left of the occipital</li>
+        <li><strong>O2:</strong> Bottom right of the occipital</li>
+        <li><strong>FPZ:</strong> Middle forehead</li>
+        <li><strong>A1:</strong> Mastoid (behind left ear)</li>
+      </ul>
+      <!-- CHANGED IMAGE SRC TO RELATIVE PATH -->
+      <img src="Images/image.png" alt="EEG placement diagram" style="width:100%; max-width:600px;">
+      <button class="next-btn" onclick="showPage('page3')">Next</button>
+    </div>
+
+    <!-- PAGE 3: FULL REGISTRATION -->
+    <div id="page3" class="page">
+      <h2>Full Registration</h2>
+      <form id="registration-form">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" required placeholder="Enter your full name">
+        </div>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+          <label for="dob">Year of Birth</label>
+          <input type="number" id="dob" name="dob" min="1900" max="2099" required placeholder="e.g., 2000">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="yourname@example.com">
+        </div>
+        <div class="form-group">
+          <label for="passwordReg">Password</label>
+          <input type="password" id="passwordReg" name="password" required placeholder="Enter a password">
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" name="confirm-password" required placeholder="Re-enter your password">
+        </div>
+        <button type="button" onclick="submitRegistration()">Register</button>
+        <p style="margin-top: 20px;">
+          Already have an account?
+          <a href="#" style="color: #f0a500;" onclick="showPage('page4')">Sign In</a>
+        </p>
+      </form>
+    </div>
+
+    <!-- PAGE 4: LOGIN -->
+    <div id="page4" class="page">
+      <h2>Login</h2>
+      <form id="login-form">
+        <div>
+          <label for="usernameLogin">Username</label>
+          <input type="text" id="usernameLogin" name="username" required placeholder="Enter your username">
+        </div>
+        <div>
+          <label for="passwordLogin">Password</label>
+          <input type="password" id="passwordLogin" name="password" required placeholder="Enter your password">
+        </div>
+        <button type="button" onclick="submitLogin()">Login</button>
+      </form>
+    </div>
+
+    <!-- PAGE 5: HOW THE TESTING WORKS -->
+    <div id="page5" class="page">
+      <h2>How the Testing Works</h2>
+      <p>
+        You are now ready to begin the cognitive load testing. Once you click "Start", the BioRadio 
+        sensors will begin capturing your brain activity using EEG technology.
+      </p>
+      <p>
+        The sensors will monitor your cognitive load as you perform tasks, providing real-time 
+        insights into your mental state.
+      </p>
+      <p>
+        Please ensure that you are in a comfortable position and ready to begin.
+      </p>
+      <button class="next-btn" onclick="showPage('page7')">Start</button>
+    </div>
+
+  
+
+    <!-- PAGE 7: START GAME BUTTON -->
+    <div id="page7" class="page">
+      <h2>Moving to Level 2</h2>
+      <p>Click below to begin the second part.</p>
+      <button class="next-btn" onclick="showPage('page8')">Start Cognisense Game</button>
+    </div>
+
+    <!-- PAGE 8: THE COGNITIVE CHALLENGE GAME -->
+    <div id="page8" class="game-container">
+      <p id="score-display">Score: 0</p>
+      <!-- Intro Section -->
+      <div id="intro-section" class="task-container">
+        <h2 class="task-header">Tasks to be Completed</h2>
+        <div class="task-list">
+          <div class="task-item">
+            <h3>Word Memorization Game</h3>
+            <p>You will be shown a list of words.</p>
+          </div>
+          <div class="task-item">
+            <h3>Reaction Time Test</h3>
+            <p>Measure how quickly you can respond to visual or auditory cues.</p>
+          </div>
+          <div class="task-item">
+            <h3>Math Problems</h3>
+            <p>Solve a few math problems.</p>
+          </div>
+          <div class="task-item">
+            <h3>Categorization Game</h3>
+            <p>Quickly and accurately sort items into the correct categories.</p>
+          </div>
+        </div>
+        <button id="start-button" class="start-btn">Start Game</button>
+      </div>
+
+      <!-- Word Memorization -->
+      <div id="word-memorization" class="hidden">
+        <h2>Word Memorization</h2>
+        <p>Memorize these words:</p>
+        <p id="word-list"></p>
+        <button id="word-continue-button" class="hidden">Continue</button>
+      </div>
+
+      <!-- Reaction Time Task 1 -->
+      <div id="reaction-time-task-1" class="hidden">
+        <h2>Reaction Time Task</h2>
+        <p>Wait for the button to become clickable, then click it as fast as you can!</p>
+        <button id="reaction-button-1" disabled>Wait...</button>
+        <p id="reaction-time-display-1">Reaction Time: -- ms</p>
+      </div>
+
+      <!-- Math Problems -->
+      <div id="math-problem-task" class="hidden">
+        <h2>Math Problems</h2>
+        <p id="math-problem"></p>
+        <input type="number" id="math-answer" class="input-field" placeholder="Answer">
+        <button id="math-submit-button">Submit</button>
+      </div>
+
+      <!-- Reaction Time Task 2 -->
+      <div id="reaction-time-task-2" class="hidden">
+        <h2>Reaction Time Task</h2>
+        <p>Press the <strong>Spacebar</strong> when the circle turns green!</p>
+        <div id="reaction-circle"></div>
+        <p id="reaction-time-display-2">Reaction Time: -- ms</p>
+      </div>
+
+      <!-- Categorization Game Introduction -->
+      <div id="categorization-game" class="hidden">
+        <h2>Categorization Game</h2>
+        <p>Your objective is to sort words or images into the correct categories as quickly and accurately as possible.</p>
+        <ul>
+          <li>Press the <strong>"E"</strong> key for items belonging to the left category.</li>
+          <li>Press the <strong>"I"</strong> key for items belonging to the right category.</li>
+          <li>Try to minimize errors to improve your overall score.</li>
+        </ul>
+        <button id="startCategorizationBtn">Start Categorization Game</button>
+      </div>
+
+      <!-- Game Screen for Categorization -->
+      <div class="game-container hidden">
+        <h2>Level <span id="level-number"></span></h2>
+        <p id="level-instructions"></p>
+        <div class="categories">
+          <div class="category-left">
+            <strong id="left-category"></strong>
+            <p class="category-key">Press "E"</p>
+          </div>
+          <div class="category-right">
+            <strong id="right-category"></strong>
+            <p class="category-key">Press "I"</p>
+          </div>
+        </div>
+        <div id="itemToSort"></div>
+        <p id="feedback"></p>
+        <p id="timer"></p>
+      </div>
+
+      <!-- Memory Recall at the End -->
+      <div id="memory-recall-end" class="hidden">
+        <h2>Memory Recall</h2>
+        <p>Please enter the words you memorized at the beginning (separated by spaces):</p>
+        <input type="text" id="word-answer-end" class="input-field" placeholder="Enter words">
+        <button id="memory-submit-button-end">Submit</button>
+      </div>
+
+      <!-- Final Score Display -->
+      <div id="final-score" class="hidden">
+        <h2>Game Over!</h2>
+        <p id="final-score-display"></p>
+        <p id="feedback-display"></p>
+        <button id="restart-button">Restart Game</button>
+      </div>
+    </div>
+
+    <!-- PAGE 9: PROFILE PAGE -->
+    <div id="profile" class="page">
+      <h2>User Profile</h2>
+      <div id="profile-info">
+        <!-- Profile info (username & score) will be loaded here -->
+      </div>
+      <button class="next-btn" onclick="showPage('page5')">Back</button>
+    </div>
+  </div>
+</body>
+</html>
