@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cognisense Setup Guide (Enhanced)</title>
+
+ <!-- Global Styles for All Pages -->
+<style>
+  :root {
+    --primary-dark: #001233;
+    --primary-blue: #023e8a;
+    --accent-blue: #0077b6;
+    --text-light: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --gradient-blue: linear-gradient(135deg, #001233 0%, #023e8a 100%);
+    --card-bg: rgba(255, 255, 255, 0.1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--gradient-blue);
+    color: var(--text-light);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  #header {
+    background: rgba(2, 62, 138, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: var(--transition-smooth);
+  }
+  #header.scrolled {
+    background: rgba(2, 62, 138, 0.95);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+  #header nav a {
+    color: var(--text-light);
+    text-decoration: none;
+    margin-left: 2rem;
+    font-weight: 500;
+    position: relative;
+    transition: var(--transition-smooth);
+  }
+  #header nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--text-light);
+    transition: var(--transition-smooth);
+  }
+  #header nav a:hover::after {
+    width: 100%;
+  }
+
+  .container {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 3rem;
+    margin: 6rem auto 2rem;
+    max-width: 800px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: var(--transition-smooth);
+  }
+  .container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #90e0ef 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+    letter-spacing: -0.5px;
+  }
+
+  .form-group {
+    margin-bottom: 2rem;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-light);
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="password"] {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: var(--transition-smooth);
+  }
+  input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+  }
+
+  button {
+    background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
+    color: var(--text-light);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+  }
+  button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: 0.5s;
+  }
+  button:hover::before {
+    left: 100%;
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  #reaction-circle {
+    width: 180px;
+    height: 180px;
+    background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
+    border-radius: 50%;
+    margin: 2rem auto;
+    position: relative;
+    transition: var(--transition-smooth);
+    box-shadow: 0 0 32px rgba(0, 119, 182, 0.3);
+  }
+  #reaction-circle::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #0077b6, #023e8a);
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(15px);
+    opacity: 0.7;
+  }
+
+  #stroop-task {
+    text-align: center;
+  }
+  #stroop-word {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 2rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    animation: pulseText 2s infinite;
+  }
+  @keyframes pulseText {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page {
+    display: none;
+    animation: fadeIn 0.5s ease-out;
+  }
+  .page.active {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 2rem;
+      margin-top: 4rem;
+    }
+    h2 {
+      font-size: 2rem;
+    }
+    #header {
+      padding: 1rem;
+    }
+    #header nav a {
+      margin-left: 1rem;
+    }
+  }
+
+  .game-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  .hidden {
+    display: none;
+  }
+
+  .stroop-word {
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin: 2rem 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .reaction-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 2rem auto;
+    transition: background-color 0.3s;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  }
+  .task-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: transform 0.3s;
+  }
+  .task-item:hover {
+    transform: translateY(-2px);
+  }
+
+  .input-field {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    width: 100%;
+    margin: 1rem 0;
+  }
+  .btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    transition: width 0.3s;
+  }
+
+  .dashboard-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+  }
+
+  #feedback-display {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Roboto Mono', monospace;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  /* ======================================= */
+  /* CATEGORIZATION GAME LAYOUT FIX (NEW)    */
+  /* ======================================= */
+
+  /* Ensures the entire game screen is a vertical flex container */
+  .game-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5rem; /* Adjust if you want more or less top space */
+  }
+
+  /* Header with level info and timer in one row */
+  .game-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* level-info on left, timer on right */
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  /* Main content (word/image + feedback) centered */
+  .game-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  /* The container for the word/image */
+  .item-display {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    min-width: 200px;
+  }
+
+  /* Categories at the bottom, left and right */
+  .categories {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* pushes left box to left, right box to right */
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  .category-box {
+    flex: 0 0 45%; /* each box takes ~half the container width */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .category-left {
+    /* If you want a bit more spacing on the right side */
+    margin-right: 0.5rem;
+  }
+  .category-right {
+    /* If you want a bit more spacing on the left side */
+    margin-left: 0.5rem;
+  }
+
+  /* Responsive tweak for smaller screens */
+  @media (max-width: 600px) {
+    .categories {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .category-box {
+      flex: 0 0 auto;
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+</style>
+
+
+  <!-- Load Chart.js for the dashboard graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Our main app.js script (fixed version) -->
+  <script type="module" src="app.js"></script>
+
+  <!-- Firebase SDK (ES Module) -->
+  <script type="module">
+    /*****************************************
+     * 1) FIREBASE INITIALIZATION
+     *****************************************/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-analytics.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      where,
+      orderBy,
+      limit,
+      Timestamp
+    } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAX...",
+      authDomain: "cognisense-949b6.firebaseapp.com",
+      projectId: "cognisense-949b6",
+      storageBucket: "cognisense-949b6.firebasestorage.app",
+      messagingSenderId: "964761577902",
+      appId: "1:964761577902:web:49f62d2644cf03ae6e003f",
+      measurementId: "G-QFR9P466JC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    /*****************************************
+     * 2) GLOBAL VARIABLES
+     *****************************************/
+    window.loggedInUser = null;
+    window.submitRegistration = submitRegistration;
+    window.submitLogin = submitLogin;
+
+    /*****************************************
+     * 3) HELPER FUNCTIONS (Registration, Login)
+     *****************************************/
+    // Registration
+    async function submitRegistration() {
+      const name = document.getElementById('name').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const dob = document.getElementById('dob').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const passwordReg = document.getElementById('passwordReg').value.trim();
+      const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+      if (!name || !username || !dob || !email || !passwordReg || !confirmPassword) {
+        alert("Please fill out all fields.");
+        return;
+      }
+      if (passwordReg !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "users"), {
+          name,
+          username,
+          dob,
+          email,
+          password: passwordReg,
+          createdAt: new Date()
+        });
+        alert("Registration successful!");
+        window.loggedInUser = username;
+        updateHeader();
+        showPage("page4");
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Registration failed. See console for details.");
+      }
+    }
+
+    // Login
+    async function submitLogin() {
+      const username = document.getElementById('usernameLogin').value.trim();
+      const passwordLogin = document.getElementById('passwordLogin').value.trim();
+
+      if (!username || !passwordLogin) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      try {
+        const usersRef = collection(db, "users");
+        const q = query(
+          usersRef,
+          where("username", "==", username),
+          where("password", "==", passwordLogin)
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          window.loggedInUser = username;
+          alert("Login successful!");
+          updateHeader();
+          showPage("page5");
+        } else {
+          alert("Login failed: Invalid credentials.");
+        }
+      } catch (error) {
+        console.error("Error logging in: ", error);
+        alert("Login error. See console for details.");
+      }
+    }
+
+    // Update Header Welcome Text
+    function updateHeader() {
+      const welcomeEl = document.getElementById('welcome-text');
+      welcomeEl.innerText = "Welcome, " + (window.loggedInUser || "Guest");
+    }
+
+    // Logout function
+    function logout() {
+      window.loggedInUser = null;
+      updateHeader();
+      showPage("page1");
+    }
+
+    /*****************************************
+     * 4) PAGE NAVIGATION
+     *****************************************/
+    const pages = [
+      "page1","page2","page3","page4","page5",
+      "page6","page7","page8","dashboard"
+    ];
+    function showPage(pageId) {
+      pages.forEach(id => {
+        const pageEl = document.getElementById(id);
+        if (pageEl) {
+          pageEl.style.display = (id === pageId) ? "block" : "none";
+        }
+      });
+      if (pageId === "page8") {
+        document.getElementById("intro-section").classList.remove("hidden");
+      }
+      if(pageId === "dashboard") {
+        loadDashboard();
+      }
+      if(pageId === "page6") {
+        currentQuestion = 0;
+        responses = {};
+        displayQuestion();
+      }
+    }
+    window.showPage = showPage;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      showPage("page1");
+      document.getElementById("dashboard-link").addEventListener("click", () => showPage("dashboard"));
+      document.getElementById("logout-link").addEventListener("click", logout);
+    });
+
+    /*****************************************
+     * 5) COGNITIVE LOAD QUESTIONS (Page 6)
+     *****************************************/
+    const questions = [
+      { question: "Did you have breakfast today?", type: "radio", options: ["Yes", "No"] },
+      { question: "Did you sleep well last night?", type: "radio", options: ["Yes", "No"] },
+      { question: "How many hours of sleep did you have?", type: "radio", options: ["Less than 5 hours", "5-7 hours", "More than 7 hours"]},
+      { question: "Did you eat dinner last night?", type: "radio", options: ["Yes", "No"]},
+      { question: "How did you feel when you woke up this morning?", type: "radio", options: ["Sleepy", "Awake", "Energetic", "Exhausted"]},
+      { question: "Did you listen to music today?", type: "radio", options: ["Yes", "No"]},
+      { question: "Did you exercise today?", type: "radio", options: ["Yes", "No"]},
+      { question: "What's the weather like where you are?", type: "radio", options: ["Sunny", "Cloudy", "Rainy", "Snowy"] }
+    ];
+    let currentQuestion = 0;
+    let responses = {};
+
+    function displayQuestion() {
+      const questionObj = questions[currentQuestion];
+      document.getElementById("question").innerText = `Q${currentQuestion+1}: ${questionObj.question}`;
+      document.getElementById("question-number").value = currentQuestion + 1;
+
+      const answerContainer = document.getElementById("answer-container");
+      answerContainer.innerHTML = "";
+
+      if (questionObj.type === "radio") {
+        questionObj.options.forEach((option, index) => {
+          const label = document.createElement("label");
+          label.style.display = "block";
+          label.style.marginBottom = "10px";
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "answer";
+          input.value = option;
+          if (index === 0) input.checked = true;
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(" " + option));
+          answerContainer.appendChild(label);
+        });
+      }
+    }
+
+    async function nextQuestion() {
+      const selectedOption = document.querySelector('input[name="answer"]:checked');
+      if (!selectedOption) {
+        alert("Please select an answer.");
+        return;
+      }
+      responses[`question${currentQuestion + 1}`] = selectedOption.value;
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        displayQuestion();
+      } else {
+        try {
+          await addDoc(collection(db, "responses"), {
+            username: window.loggedInUser || "anonymous",
+            ...responses,
+            timestamp: Timestamp.now()
+          });
+          alert("Cognitive load responses saved successfully!");
+          showPage("page7");
+        } catch (error) {
+          console.error("Error saving responses:", error);
+          alert("Failed to save responses. Check console for details.");
+        }
+      }
+    }
+    window.nextQuestion = nextQuestion;
+
+    /*****************************************
+     * 6) DASHBOARD WITH A GRAPH
+     *****************************************/
+    async function loadDashboard() {
+      if (!window.loggedInUser) {
+        alert("Please login to view the dashboard.");
+        return;
+      }
+      document.getElementById("dashboard-info").innerHTML = "";
+      const scoresRef = collection(db, "scores");
+      const qScores = query(scoresRef, where("user", "==", window.loggedInUser), orderBy("timestamp", "desc"));
+      const scoresSnapshot = await getDocs(qScores);
+
+      const timeLabels = [];
+      const scoresData = [];
+
+      scoresSnapshot.forEach(doc => {
+        const data = doc.data();
+        const dateStr = data.timestamp.toDate().toLocaleString();
+        timeLabels.push(dateStr);
+        scoresData.push(data.score);
+      });
+      timeLabels.reverse();
+      scoresData.reverse();
+
+      const ctx = document.getElementById('scoreChart').getContext('2d');
+      if (window.scoreChartInstance) {
+        window.scoreChartInstance.destroy();
+      }
+      window.scoreChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timeLabels,
+          datasets: [{
+            label: 'Scores Over Time',
+            data: scoresData,
+            backgroundColor: 'rgba(240, 165, 0, 0.3)',
+            borderColor: 'rgba(240, 165, 0, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <!-- HEADER -->
+  <div id="header">
+    <span id="welcome-text">Welcome, Guest</span>
+    <nav>
+      <a href="#" id="dashboard-link">Dashboard</a>
+      <a href="#" id="logout-link">Logout</a>
+    </nav>
+  </div>
+
+  <!-- CONTAINER FOR PAGES -->
+  <div class="container">
+    <!-- PAGE 1 -->
+    <div id="page1" class="page">
+      <h2>Welcome to Cognisense</h2>
+      <p>
+        You are about to embark on a journey to test your cognitive load as an interplanetary explorer!
+        These tasks will challenge your memory, reaction times, and mental flexibility. Sensors will
+        measure your brain activity in real time.
+      </p>
+      <p>
+        Are you ready to see how well you can perform under pressure? Click "Next" to begin!
+      </p>
+      <button class="next-btn" onclick="showPage('page2')">Next</button>
+    </div>
+
+    <!-- PAGE 2: EEG Setup -->
+    <div id="page2" class="page">
+      <h2>EEG Setup Instructions</h2>
+      <p>To measure cognitive load, place the EEG pads on your head as follows:</p>
+      <ul>
+        <li><strong>Frontal Lobe (Red - Fp1, Fp2): </strong>Front of the head</li>
+        <li><strong>Ear Lobes (Yellow - A1, A2): </strong>On the sides of the head</li>
+        <li><strong>Parietal Lobe (Blue - P3, Pz, P4): </strong>Upper back of the head</li>
+        <li><strong>Occipital Lobe (Brown - O1, O2): </strong>Lower back of the head</li>
+      </ul>
+      <img src="electrode-positions.png" alt="EEG placement diagram" style="width:100%; max-width:600px;">
+      <button class="next-btn" onclick="showPage('page3')">Next</button>
+    </div>
+
+    <!-- PAGE 3: Full Registration -->
+    <div id="page3" class="page">
+      <h2>Full Registration</h2>
+      <form id="registration-form">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" required placeholder="Enter your full name">
+        </div>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+          <label for="dob">Year of Birth</label>
+          <input type="number" id="dob" name="dob" min="1900" max="2099" required placeholder="e.g., 2000">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="yourname@example.com">
+        </div>
+        <div class="form-group">
+          <label for="passwordReg">Password</label>
+          <input type="password" id="passwordReg" name="password" required placeholder="Enter a password">
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" name="confirm-password" required placeholder="Re-enter your password">
+        </div>
+        <button type="button" onclick="submitRegistration()">Register</button>
+        <p style="margin-top: 20px;">
+          Already have an account?
+          <a href="#" style="color: #f0a500;" onclick="showPage('page4')">Sign In</a>
+        </p>
+      </form>
+    </div>
+
+    <!-- PAGE 4: Login -->
+    <div id="page4" class="page">
+      <h2>Login</h2>
+      <form id="login-form">
+        <div>
+          <label for="usernameLogin">Username</label>
+          <input type="text" id="usernameLogin" name="username" required placeholder="Enter your username">
+        </div>
+        <div>
+          <label for="passwordLogin">Password</label>
+          <input type="password" id="passwordLogin" name="password" required placeholder="Enter your password">
+        </div>
+        <button type="button" onclick="submitLogin()">Login</button>
+      </form>
+    </div>
+
+    <!-- PAGE 5: How Testing Works -->
+    <div id="page5" class="page">
+      <h2>How the Testing Works</h2>
+      <p>
+        You are now ready to begin the cognitive load testing. Once you click "Next", the BioRadio
+        sensors will begin capturing your brain activity using EEG technology.
+      </p>
+      <p>
+        The sensors will monitor your cognitive load as you perform tasks, providing real-time
+        insights into your mental state.
+      </p>
+      <p>
+        Please ensure that you are in a comfortable position and ready to begin.
+      </p>
+      <button class="next-btn" onclick="showPage('page6')">Next</button>
+    </div>
+
+    <!-- PAGE 6: Cognitive Load Questions -->
+    <div id="page6" class="page">
+      <h2>Cognitive Load Assessment</h2>
+      <p id="question"></p>
+      <div id="answer-container"></div>
+      <input type="hidden" id="question-number">
+      <button class="next-btn" onclick="nextQuestion()">Next</button>
+    </div>
+
+      <!-- PAGE 7: START GAME BUTTON -->
+      <div id="page7" class="page">
+        <h2>Moving to Level 2</h2>
+        <p>Click below to begin the second part.</p>
+        <button class="next-btn" onclick="showPage('page8')">Start Cognisense Game</button>
+      </div>
+    </div>
+  
+    <!-- PAGE 8: THE COGNITIVE CHALLENGE GAME -->
+    <div id="page8" class="game-container">
+      <p id="score-display">Score: 0</p>
+  
+      <!-- Intro Section -->
+      <div id="intro-section" class="task-container">
+        <h2 class="task-header">Tasks to be Completed</h2>
+        <div class="task-list">
+          <div class="task-item">
+            <h3>Word Memorization Game</h3>
+            <p>You will be shown a list of words.</p>
+          </div>
+          <div class="task-item">
+            <h3>Reaction Time Test</h3>
+            <p>Measure how quickly you can respond to visual or auditory cues.</p>
+          </div>
+          <div class="task-item">
+            <h3>Math Problems</h3>
+            <p>Solve a few math problems.</p>
+          </div>
+          <div class="task-item">
+            <h3>Categorization Game</h3>
+            <p>Quickly and accurately sort items into the correct categories.</p>
+          </div>
+        </div>
+        <button id="start-button" class="start-btn">Start Game</button>
+      </div>
+  
+      <!-- Word Memorization -->
+      <div id="word-memorization" class="hidden">
+        <h2>Word Memorization</h2>
+        <p>Memorize these words:</p>
+        <p id="word-list"></p>
+        <button id="word-continue-button" class="hidden">Continue</button>
+      </div>
+  
+      <!-- Reaction Time Task 1 -->
+      <div id="reaction-time-task-1" class="hidden">
+        <h2>Reaction Time Task</h2>
+        <p>Wait for the button to become clickable, then click it as fast as you can!</p>
+        <button id="reaction-button-1" disabled>Wait...</button>
+        <p id="reaction-time-display-1">Reaction Time: -- ms</p>
+      </div>
+  
+      <!-- Math Problems -->
+      <div id="math-problem-task" class="hidden">
+        <h2>Math Problems</h2>
+        <p id="math-problem"></p>
+        <input type="number" id="math-answer" class="input-field" placeholder="Answer">
+        <button id="math-submit-button">Submit</button>
+      </div>
+  
+      <!-- Reaction Time Task 2 -->
+      <div id="reaction-time-task-2" class="hidden">
+        <h2>Reaction Time Task</h2>
+        <p>Press the <strong>Spacebar</strong> when the circle turns green!</p>
+        <div id="reaction-circle"></div>
+        <p id="reaction-time-display-2">Reaction Time: -- ms</p>
+      </div>
+  
+      <!-- Categorization Game Introduction -->
+     <!-- Intro Screen (Shown first) -->
+<div id="categorization-game" class="intro-screen hidden">
+  <div class="intro-content">
+    <h2>Categorization Game</h2>
+    <p>
+      Your objective is to sort words or images into the correct categories as
+      quickly and accurately as possible.
+    </p>
+    <ul>
+      <li>Press the <strong>"E"</strong> key for items belonging to the left category.</li>
+      <li>Press the <strong>"I"</strong> key for items belonging to the right category.</li>
+      <li>Try to minimize errors to improve your overall score.</li>
+    </ul>
+    <button id="startCategorizationBtn">Start Categorization Game</button>
+  </div>
+</div>
+
+<!-- Game Screen (Shown after clicking "Start") -->
+<div id="categorization-container" class="hidden">
+  <!-- Header with level info and timer -->
+  <header class="game-header">
+    <div class="level-info">
+      <h2>
+        Level <span id="level-number"></span>
+      </h2>
+      <p id="level-instructions"></p>
+    </div>
+    <div class="timer-container">
+      <p>Time Left: <span id="timer"></span>s</p>
+    </div>
+  </header>
+
+  <!-- Main content area with the item to sort and feedback -->
+  <main class="game-main">
+    <div class="item-display" id="itemToSort">
+      <!-- The word/image to be categorized will appear here -->
+    </div>
+    <div class="feedback-container">
+      <p id="feedback"></p>
+    </div>
+  </main>
+
+  <!-- Categories at the bottom or side (depending on your CSS) -->
+  <section class="categories">
+    <div class="category-box category-left">
+      <strong id="left-category"></strong>
+      <p class="category-key">Press "E"</p>
+    </div>
+    <div class="category-box category-right">
+      <strong id="right-category"></strong>
+      <p class="category-key">Press "I"</p>
+    </div>
+  </section>
+</div>
+
+  
+      <!-- Memory Recall at the End -->
+      <div id="memory-recall-end" class="hidden">
+        <h2>Memory Recall</h2>
+        <p>Please enter the words you memorized at the beginning (separated by spaces):</p>
+        <input type="text" id="word-answer-end" class="input-field" placeholder="Enter words">
+        <button id="memory-submit-button-end">Submit</button>
+      </div>
+  
+      <!-- Final Score Display -->
+      <div id="final-score" class="hidden">
+        <h2>Game Over!</h2>
+        <p id="final-score-display"></p>
+        <p id="feedback-display"></p>
+        <button id="restart-button">Restart Game</button>
+      </div>
+    </div>
+  
+    <!-- Reference the external JavaScript file -->
+    <script src="script.js"></script>
+  </body>
+  </html>
