@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# **Cognisense: Cognitive Load Measurement System**
 
-## Getting Started
+## **Overview**
 
-First, run the development server:
+Cognisense is a system designed to measure and analyze cognitive load in real-time using EEG data and facial emotion recognition. This project integrates biosensing technology to capture mental workload while users engage in a game application. By combining both quantitative (EEG) and qualitative (facial expressions) data, Cognisense provides a more holistic and accurate cognitive load measurement.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## **Project Vision**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Cognisense envisions a world where individuals and organizations can harness real-time cognitive insights to foster healthier, more efficient, and effective work and learning environments. By capturing EEG signals during gameplay and analyzing facial expressions, Cognisense provides valuable insights into cognitive load, helping users better understand and manage mental effort.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## **Technologies Used**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### **Frontend:**
+- **React 18**
+- **Next.js**
+- **Chart.js**
+- **Tailwind CSS**
+- **jsPDF**
+- **BroadcastChannel API**
 
-## Learn More
+### **Backend:**
+- **FastAPI**
+- **Uvicorn**
+- **Python (Threading, AsyncIO, SciPy)**
+- **WebSocket**
+- **REST API**
 
-To learn more about Next.js, take a look at the following resources:
+### **Data & Hosting:**
+- **Firebase** (Hosting, Firestore, Authentication)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### **Other Tools:**
+- **LabStreamingLayer (LSL)**
+- **Node.js**
+- **JavaScript**
+- **Face-api.js** (for Facial Emotion Recognition)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## **Why EEG?**
 
-## Deploy on Vercel
+- **Direct Brain Measurement**: Tracks brain signals directly, providing real-time insight into mental effort.
+- **Sensitive to Thinking Levels**: Measures how active or relaxed the brain is based on natural brain patterns.
+- **Live Feedback**: Shows how a person's mental load changes during a task.
+- **Non-Invasive and Portable**: Easy to wear like a headset without surgery or discomfort.
+- **Trusted Method**: Used by researchers and healthcare teams worldwide to study brain activity.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## **Subjective Measures**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Face Recognition**: Monitors emotional expressions like stress or focus during tasks, providing additional insight into cognitive load alongside EEG data.
+- **NASA TLX**: A survey tool that measures how mentally and physically demanding a task felt to the user.
+
+## **Task Implementation**
+
+- **Purpose**: A mini-game to intentionally increase cognitive load during EEG sessions.
+- **Task Design**: Rapid math problems, categorization tasks, and memorization tasks.
+- **Reason**: To create measurable mental effort that affects brainwaves (alpha, beta, gamma).
+- **Goal**: Provide a controlled, repeatable way to study cognitive load.
+
+## **Techniques Used**
+
+### **EEG Measurement (Quantitative)**
+
+- **Device + Streaming**: Real-time streaming of EEG data from CGX Quick 20r v2.
+- **Cognitive Load Processing**: Real-time frontend updates based on EEG data.
+- **Tab Sync and UI**: Synchronizes real-time data across devices for a seamless experience.
+
+### **Facial Emotion Recognition (Qualitative)**
+
+- **Face-api.js**: Built on top of TensorFlow.js, this API processes facial expressions in real-time.
+- **Real-Time Processing**: Captures emotions every second.
+- **Data Handling**: Data is saved in Firebase every 10 seconds.
+- **Cognitive Load Calculation**: Combines dominant emotions and EEG data for overall cognitive load measurement.
+
+## **Data Storage & Report Page**
+
+- **Storage Solution**: Firebase Firestore for serverless architecture.
+- **Data Visualization**: Pulls data from Firestore to generate interactive charts and graphs on the dynamic report page.
+- **OpenAI Chatbot**: Provides personalized insights based on stored session data.
+
+## **Required Tools and Setup**
+
+### **Administrator Side Setup**
+1. **Backend**: Run `uvicorn main:app --reload` to start/stop EEG with LabStreamingLayer.
+2. **LSL Integration**: Stream real-time EEG data to the system.
+
+### **User Side Setup**
+1. **Device Requirements**: Webcam and stable Wi-Fi connection.
+2. **CGX EEG Device**: Wear the headset to capture EEG data.
+3. **Room Setup**: Quiet space with good lighting for facial recognition.
+
+## **Demo**
+
+A live demonstration of the Cognisense system can be found in the documentation and video demo.
+
+## **The Journey: Challenges, Solutions, and Design Iterations**
+
+### **Challenges**:
+- Initial EEG data inconsistencies.
+- Facial emotion recognition challenges.
+- Synchronization of real-time data streams.
+
+### **Solutions**:
+- Refined data processing techniques.
+- Implemented advanced face-api.js for emotion tracking.
+- Optimized backend for smooth data synchronization.
+
+## **Retrospective: Reflections & Learnings**
+
+- **Personal Learnings**: Step out of our comfort zones to work collaboratively and finish our project on time.
+- **Teamwork**: Collaborating with teammates and mentors helped develop a better understanding of user's needs and the problem we were solving for.
+- **What We Liked**: The integration of multiple technologies to create a full stack cognitive load system.
+
+## **Want to Try It Out?**
+
+Experience Cognisense for yourself! To start using the system, follow these steps:
+
+1. Set up the **CGX Quick 20r v2** EEG headset and connect it to the LabStreamingLayer.
+2. Launch the **game application** that integrates real-time EEG monitoring and facial emotion recognition.
+3. Monitor your **cognitive load** in real-time and explore how different activities affect your mental workload.
+
+## **Acknowledgments**
+
+- **Mentors**: Dr. Ohu, Dr. Wang
+- **Client**: Lockheed Martin
+- **Professor**: Dr. Tang
+
+---
