@@ -2,8 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { auth, db } from './firebase/firebase';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+
 // If using Firebase Auth or Firestore in the client, import them here
 // import { db } from '@/lib/firebase'; // example path
+
+ // Cognitive questions array
+ const questions = [
+  { question: "Did you have breakfast today?", type: "radio", options: ["Yes", "No"] },
+  { question: "Did you sleep well last night?", type: "radio", options: ["Yes", "No"] },
+  { question: "How many hours of sleep did you have?", type: "radio", options: ["Less than 5 hours", "5-7 hours", "More than 7 hours"]},
+  { question: "Did you eat dinner last night?", type: "radio", options: ["Yes", "No"]},
+  { question: "How did you feel when you woke up this morning?", type: "radio", options: ["Sleepy", "Awake", "Energetic", "Exhausted"]},
+  { question: "Did you listen to music today?", type: "radio", options: ["Yes", "No"]},
+  { question: "Did you exercise today?", type: "radio", options: ["Yes", "No"]},
+  { question: "What's the weather like where you are?", type: "radio", options: ["Sunny", "Cloudy", "Rainy", "Snowy"] }
+];
 
 export default function Page() {
   const router = useRouter();
@@ -24,6 +43,9 @@ export default function Page() {
 
   const [loginUser, setLoginUser] = useState('');
   const [loginPass, setLoginPass] = useState('');
+  const [responses, setResponses] = useState({});
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+
 
   // ---------------------------
   // 2) “Lifecycle”
@@ -46,7 +68,7 @@ export default function Page() {
   };
 
   // ---------------------------
-  // 4) Registration & Login
+  // 4) Registration & Login carine (updated to save to firebase users)
   // ---------------------------
   async function handleRegistration() {
     if (!regName || !regUser || !regDOB || !regEmail || !regPass || !regConfirm) {
@@ -57,58 +79,69 @@ export default function Page() {
       alert('Passwords do not match!');
       return;
     }
-
+  
     try {
-      // Example Firestore usage:
-      // await addDoc(collection(db, 'users'), {
-      //   name: regName,
-      //   username: regUser,
-      //   dob: regDOB,
-      //   email: regEmail,
-      //   password: regPass,
-      //   createdAt: new Date()
-      // });
-
-      alert('Registration successful!');
+      const userCredential = await createUserWithEmailAndPassword(auth, regEmail, regPass);
+      const user = userCredential.user;
+  
+      // Save additional user info to Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        name: regName,
+        username: regUser,
+        dob: regDOB,
+        email: regEmail,
+        createdAt: new Date(),
+      });
+  
+      localStorage.setItem('currentUser', user.uid);
       setLoggedInUser(regUser);
-      showPage('page4'); // go to login or directly to next
+      showPage('page5');
+      alert('🎉 Registration successful!');
     } catch (err) {
       console.error(err);
-      alert('Registration failed.');
+      alert('❌ Registration failed.');
     }
-  }
-
+  }  
   async function handleLogin() {
     if (!loginUser || !loginPass) {
       alert('Please fill out all fields.');
       return;
     }
-
+  
     try {
-      // Example Firestore usage:
-      // const q = query(
-      //   collection(db, 'users'),
-      //   where('username', '==', loginUser),
-      //   where('password', '==', loginPass)
-      // );
-      // const querySnapshot = await getDocs(q);
-      // if (!querySnapshot.empty) {
-      //   setLoggedInUser(loginUser);
-      //   alert('Login successful!');
-      //   showPage('page5');
-      // } else {
-      //   alert('Invalid credentials.');
-      // }
-
-      alert('Login successful! (Mock)');
-      setLoggedInUser(loginUser);
+      const userCredential = await signInWithEmailAndPassword(auth, loginUser, loginPass);
+      const user = userCredential.user;
+  
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const username = userDoc.exists() ? userDoc.data().username : 'anonymous';
+  
+      setLoggedInUser(username);
+      localStorage.setItem('currentUser', user.uid);
+      alert('✅ Login successful!');
       showPage('page5');
     } catch (err) {
       console.error(err);
-      alert('Login error.');
+      alert('❌ Invalid credentials.');
     }
-  }
+  }  
 
+    // ---------------------------
+  // Handle Answer Change for Cognitive Questions
+  // ---------------------------
+  const handleAnswerChange = (e) => {
+    const { name, value } = e.target;
+    setResponses((prevResponses) => ({
+      ...prevResponses,
+      [name]: value,
+    }));
+  };
+
+  // Navigate to the next question
+  const nextQuestion = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    }
+  };
   // ---------------------------
   // 5) Render UI
   // ---------------------------
@@ -118,22 +151,36 @@ export default function Page() {
       <header
         className="fixed w-full top-0 z-50 p-4 backdrop-blur-sm bg-[rgba(2,62,138,0.1)] border-b border-white/10 transition-all"
       >
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <span id="welcome-text" className="font-bold">
-            {loggedInUser ? `Welcome, ${loggedInUser}` : 'Welcome, Guest'}
-          </span>
-          <nav>
-            <button
-              onClick={() => showPage('dashboard')}
-              className="ml-4 hover:underline"
-            >
-              Dashboard
-            </button>
-            <button onClick={logout} className="ml-4 hover:underline">
-              Logout
-            </button>
-          </nav>
-        </div>
+            <div className="max-w-5xl mx-auto flex items-center justify-between">
+  <span id="welcome-text" className="font-bold">
+    <a href="#" className="hover:underline">
+      {loggedInUser ? `Welcome, ${loggedInUser}` : 'Welcome, Guest'}
+    </a>
+  </span>
+  <nav>
+    <button
+      onClick={() => router.push('/game/')}
+      className="ml-4 hover:underline"
+    >
+      Game
+    </button>
+    <button
+      onClick={() => router.push('/nasatlx/')}
+      className="ml-4 hover:underline"
+    >
+      NASA TLX
+    </button>
+    <button
+      onClick={() => router.push('/report/')}
+      className="ml-4 hover:underline"
+    >
+      Report
+    </button>
+    <button onClick={logout} className="ml-4 hover:underline">
+      Logout
+    </button>
+  </nav>
+</div>
       </header>
 
       {/* --- CONTAINER --- */}
@@ -175,7 +222,7 @@ export default function Page() {
               <li><strong>Occipital Lobe (O1, O2)</strong></li>
             </ul>
             <img
-              src="/electrode-positions.png"
+              src="/electrode.png"
               alt="EEG placement diagram"
               className="w-full max-w-md mx-auto my-4 border border-white/10 rounded"
             />
@@ -274,7 +321,7 @@ export default function Page() {
           <section>
             <h2 className="text-3xl font-bold mb-4">Login</h2>
             <div className="mb-4">
-              <label className="block mb-1">Username</label>
+              <label className="block mb-1">Email</label>
               <input
                 type="text"
                 value={loginUser}
@@ -330,7 +377,29 @@ export default function Page() {
         {activePage === 'page6' && (
           <section>
             <h2 className="text-3xl font-bold mb-4">Cognitive Load Assessment</h2>
-            <p>(You could replicate your question logic or route somewhere else.)</p>
+            <p className="mb-4">Please answer the following questions:</p>
+
+            {/* Loop through questions */}
+            {questions.map((question, index) => (
+              <div key={index} className="mb-6">
+                <p className="font-semibold">{`Q${index + 1}: ${question.question}`}</p>
+                <div className="flex flex-col space-y-2">
+                  {question.options.map((option, i) => (
+                    <label key={i} className="flex items-center">
+                      <input
+                        type="radio"
+                        name={`question${index}`}
+                        value={option}
+                        checked={responses[`question${index}`] === option}
+                        onChange={handleAnswerChange}
+                        className="mr-2"
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
             <button
               className="px-4 py-2 rounded bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105"
               onClick={() => showPage('page7')}
